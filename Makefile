@@ -26,7 +26,10 @@ OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
 OBJECTS += nes_vrc7.o
 
-all: ${OBJECTS}
+all: nsfplay
+
+nsfplay: ${OBJECTS}
+	${CPP} -o nsfplay src/cli.cpp ${OBJECTS}
 
 clean:
 	rm -f ${OBJECTS}
