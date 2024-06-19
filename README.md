@@ -1,4 +1,4 @@
-# WIP: NSFPlay for CLI
+# WIP: NSFPlay for Linux (CLI)
 
 ## About
 
