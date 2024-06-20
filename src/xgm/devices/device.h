@@ -1,7 +1,6 @@
 #ifndef _DEVICE_H_
 #define _DEVICE_H_
 #include <stdio.h>
-#include <vector>
 #include <assert.h>
 #include "../xtypes.h"
 #include "devinfo.h"
@@ -13,60 +12,60 @@ namespace xgm
   const int DEFAULT_RATE = 48000;
 
   /**
-   * ƒGƒ~ƒ…ƒŒ[ƒ^‚ÅŽg—p‚·‚éƒfƒoƒCƒX‚Ì’ŠÛ
+   * ï¿½Gï¿½~ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½^ï¿½ÅŽgï¿½pï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½Ì’ï¿½ï¿½ï¿½
    */
   class IDevice
   {
   public:
     /**
-     * ƒfƒoƒCƒX‚ÌƒŠƒZƒbƒg
+     * ï¿½fï¿½oï¿½Cï¿½Xï¿½Ìƒï¿½ï¿½Zï¿½bï¿½g
      *
      * <P>
-     * ‚±‚Ìƒƒ\ƒbƒh‚ÌŒÄ‚Ño‚µŒãC‚±‚ÌƒfƒoƒCƒX‚Í‚Ç‚Ì‚æ‚¤‚Èƒƒ\ƒbƒh‚ÌŒÄ‚Ñ
-     * o‚µ‚É‘Î‚µ‚Ä‚àCŽÀsŽžƒGƒ‰[‚ð‹N‚±‚µ‚Ä‚Í‚È‚ç‚È‚¢D‹t‚ÉC‚±‚Ìƒƒ\ƒb
-     * ƒh‚ðŒÄ‚ÔˆÈ‘O‚ÍC‘¼‚Ìƒƒ\ƒbƒh‚Ì“®ì‚ÍˆêØ•ÛØ‚µ‚È‚­‚Ä‚à—Ç‚¢B
+     * ï¿½ï¿½ï¿½Ìƒï¿½ï¿½\ï¿½bï¿½hï¿½ÌŒÄ‚Ñoï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½oï¿½Cï¿½Xï¿½Í‚Ç‚Ì‚æ‚¤ï¿½Èƒï¿½ï¿½\ï¿½bï¿½hï¿½ÌŒÄ‚ï¿½
+     * ï¿½oï¿½ï¿½ï¿½É‘Î‚ï¿½ï¿½Ä‚ï¿½ï¿½Cï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½Ä‚Í‚È‚ï¿½È‚ï¿½ï¿½Dï¿½tï¿½ÉCï¿½ï¿½ï¿½Ìƒï¿½ï¿½\ï¿½b
+     * ï¿½hï¿½ï¿½ï¿½Ä‚ÔˆÈ‘Oï¿½ÍCï¿½ï¿½ï¿½Ìƒï¿½ï¿½\ï¿½bï¿½hï¿½Ì“ï¿½ï¿½ï¿½Íˆï¿½Ø•ÛØ‚ï¿½ï¿½È‚ï¿½ï¿½Ä‚ï¿½ï¿½Ç‚ï¿½ï¿½B
      * </P>
      */
     virtual void Reset () = 0;
 
     /**
-     * ƒfƒoƒCƒX‚Ö‚Ì‘‚«ž‚Ý
+     * ï¿½fï¿½oï¿½Cï¿½Xï¿½Ö‚Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      * 
-     * @param adr ƒAƒhƒŒƒX
-     * @param val ‘‚«ž‚Þ’l
-     * @param id  ƒfƒoƒCƒXŽ¯•Êî•ñDˆê‚Â‚ÌƒfƒoƒCƒX‚ª•¡”‚ÌIO‚ðƒTƒ|[ƒg‚·‚éŽž‚È‚Ç
-     * @return ¬Œ÷Žž true Ž¸”sŽž false
+     * @param adr ï¿½Aï¿½hï¿½ï¿½ï¿½X
+     * @param val ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ’l
+     * @param id  ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½Êï¿½ï¿½Dï¿½ï¿½Â‚Ìƒfï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½IOï¿½ï¿½ï¿½Tï¿½|ï¿½[ï¿½gï¿½ï¿½ï¿½éŽžï¿½È‚ï¿½
+     * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½ï¿½sï¿½ï¿½ false
      */
     virtual bool Write (UINT32 adr, UINT32 val, UINT32 id=0)=0;
 
     /**
-     * ƒfƒoƒCƒX‚©‚ç“Ç‚Ýž‚Ý
+     * ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½Ç‚Ýï¿½ï¿½ï¿½
      *
-     * @param adr ƒAƒhƒŒƒX
-     * @param val “Ç‚Ýo‚µ‚½’l‚ðŽó‚¯Žæ‚é•Ï”D
-     * @return ¬Œ÷Žž true Ž¸”sŽž false
+     * @param adr ï¿½Aï¿½hï¿½ï¿½ï¿½X
+     * @param val ï¿½Ç‚Ýoï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½ó‚¯Žï¿½ï¿½Ïï¿½ï¿½D
+     * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½ï¿½sï¿½ï¿½ false
      */
     virtual bool Read (UINT32 adr, UINT32 & val, UINT32 id=0)=0;
 
     /**
-     * ŠeŽíƒIƒvƒVƒ‡ƒ“‚ðÝ’è‚·‚é(‚à‚µ‚ ‚ê‚Î)
+     * ï¿½eï¿½ï¿½Iï¿½vï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý’è‚·ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
      */
     virtual void SetOption (int id, int val){};
     virtual ~IDevice() {};
   };
 
   /**
-   * ƒCƒ“ƒ^[ƒtƒF[ƒXF‰¹º‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ª‰Â”\‚ÈƒNƒ‰ƒX
+   * ï¿½Cï¿½ï¿½ï¿½^ï¿½[ï¿½tï¿½Fï¿½[ï¿½Xï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Â”\ï¿½ÈƒNï¿½ï¿½ï¿½X
    */
   class IRenderable
   {
   public:
     /**
-     * ‰¹º‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO
+     * ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½O
      * 
-     * @param b[2] ‡¬‚³‚ê‚½ƒf[ƒ^‚ðŠi”[‚·‚é”z—ñD
-     * b[0]‚ª¶ƒ`ƒƒƒ“ƒlƒ‹Cb[1]‚ª‰Eƒ`ƒƒƒ“ƒlƒ‹‚Ì‰¹ºƒf[ƒ^D
-     * @return ‡¬‚µ‚½ƒf[ƒ^‚ÌƒTƒCƒYD1‚È‚çƒ‚ƒmƒ‰ƒ‹D2‚È‚çƒXƒeƒŒƒID0‚Í‡¬Ž¸”sD
+     * @param b[2] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½ï¿½zï¿½ï¿½D
+     * b[0]ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Cb[1]ï¿½ï¿½ï¿½Eï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Ì‰ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½D
+     * @return ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ÌƒTï¿½Cï¿½Yï¿½D1ï¿½È‚çƒ‚ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½D2ï¿½È‚ï¿½Xï¿½eï¿½ï¿½ï¿½Iï¿½D0ï¿½Íï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½D
      */
     virtual UINT32 Render (INT32 b[2]) = 0;
 
@@ -82,7 +81,7 @@ namespace xgm
   };
 
   /**
-   * ‰¹º‡¬ƒ`ƒbƒv
+   * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½bï¿½v
    */
   class ISoundChip : public IDevice, virtual public IRenderable
   {
@@ -93,16 +92,16 @@ namespace xgm
     virtual void Tick (UINT32 clocks) = 0;
 
     /**
-     * ƒ`ƒbƒv‚Ì“®ìƒNƒƒbƒN‚ðÝ’è
+     * ï¿½`ï¿½bï¿½vï¿½Ì“ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½Ý’ï¿½
      *
-     * @param clock “®ìŽü”g”
+     * @param clock ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½
      */
     virtual void SetClock (double clock) = 0;
 
     /**
-     * ‰¹º‡¬ƒŒ[ƒgÝ’è
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½gï¿½Ý’ï¿½
      *
-     * @param rate o—ÍŽü”g”
+     * @param rate ï¿½oï¿½ÍŽï¿½ï¿½gï¿½ï¿½
      */
     virtual void SetRate (double rate) = 0;
 
@@ -130,92 +129,89 @@ namespace xgm
   };
 
   /**
-   * ƒoƒX
+   * ï¿½oï¿½X
    *
    * <P>
-   * •¡”‚ÌƒfƒoƒCƒX‚ÉCƒŠƒZƒbƒgC‘‚«ž‚ÝC“Ç‚Ýž‚Ý“®ì‚ðƒuƒ[ƒhƒLƒƒƒXƒg‚·‚éD
+   * ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒfï¿½oï¿½Cï¿½Xï¿½ÉCï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÝCï¿½Ç‚Ýï¿½ï¿½Ý“ï¿½ï¿½ï¿½ï¿½ï¿½uï¿½ï¿½ï¿½[ï¿½hï¿½Lï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½D
    * <P>
    */
   class Bus : public IDevice
   {
   protected:
-    std::vector < IDevice * > vd;
+    IDevice* vd_ptr[256];
+    int vd_num;
   public:
     /**
-     * ƒŠƒZƒbƒg
+     * ï¿½ï¿½ï¿½Zï¿½bï¿½g
      *
      * <P>
-     * Žæ‚è•t‚¯‚ç‚ê‚Ä‚¢‚é‘S‚Ä‚ÌƒfƒoƒCƒX‚ÌCResetƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·D
-     * ŒÄ‚Ño‚µ‡˜‚ÍCƒfƒoƒCƒX‚ªŽæ‚è•t‚¯‚ç‚ê‚½‡˜‚É“™‚µ‚¢D
+     * ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Sï¿½Ä‚Ìƒfï¿½oï¿½Cï¿½Xï¿½ÌCResetï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½ï¿½D
+     * ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍCï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½D
      * </P>
      */
     void Reset ()
     {
-      std::vector < IDevice * >::iterator it;
-      for (it = vd.begin (); it != vd.end (); it++)
-        (*it)->Reset ();
+      for (int i = 0; i < vd_num; i++) {
+        vd_ptr[i]->Reset();
+      }
     }
 
     /**
-     * ‘SƒfƒoƒCƒX‚ÌŽæ‚èŠO‚µ
+     * ï¿½Sï¿½fï¿½oï¿½Cï¿½Xï¿½ÌŽï¿½ï¿½Oï¿½ï¿½
      */
     void DetachAll ()
     {
-      vd.clear ();
+      vd_num = 0;
     }
 
     /**
-     * ƒfƒoƒCƒX‚ÌŽæ‚è•t‚¯
+     * ï¿½fï¿½oï¿½Cï¿½Xï¿½ÌŽï¿½ï¿½tï¿½ï¿½
      *
      * <P>
-     * ‚±‚ÌƒoƒX‚ÉƒfƒoƒCƒX‚ðŽæ‚è•t‚¯‚éD
+     * ï¿½ï¿½ï¿½Ìƒoï¿½Xï¿½Éƒfï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½D
      * </P>
      *
-     * @param d Žæ‚è•t‚¯‚éƒfƒoƒCƒX‚Ö‚Ìƒ|ƒCƒ“ƒ^
+     * @param d ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½Ö‚Ìƒ|ï¿½Cï¿½ï¿½ï¿½^
      */
     void Attach (IDevice * d)
     {
-      vd.push_back (d);
+      vd_ptr[vd_num++] = d;
     }
 
     /**
-     * ‘‚«ž‚Ý
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * <P>
-     * Žæ‚è•t‚¯‚ç‚ê‚Ä‚¢‚é‘S‚Ä‚ÌƒfƒoƒCƒX‚ÌCWriteƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·D
-     * ŒÄ‚Ño‚µ‡˜‚ÍCƒfƒoƒCƒX‚ªŽæ‚è•t‚¯‚ç‚ê‚½‡˜‚É“™‚µ‚¢D
+     * ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Sï¿½Ä‚Ìƒfï¿½oï¿½Cï¿½Xï¿½ÌCWriteï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½ï¿½D
+     * ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍCï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½D
      * </P>
      */
     bool Write (UINT32 adr, UINT32 val, UINT32 id=0)
     {
       bool ret = false;
-      std::vector < IDevice * >::iterator it;
-      for (it = vd.begin (); it != vd.end (); it++)
-        ret |= (*it)->Write (adr, val);
+      for (int i = 0; i < vd_num; i++) {
+        vd_ptr[i]->Write(adr, val);
+      }
       return ret;
     }
 
     /**
-     * “Ç‚Ýž‚Ý
+     * ï¿½Ç‚Ýï¿½ï¿½ï¿½
      *
      * <P>
-     * Žæ‚è•t‚¯‚ç‚ê‚Ä‚¢‚é‘S‚Ä‚ÌƒfƒoƒCƒX‚ÌReadƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·D
-     * ŒÄ‚Ño‚µ‡˜‚ÍCƒfƒoƒCƒX‚ªŽæ‚è•t‚¯‚ç‚ê‚½‡˜‚É“™‚µ‚¢D
-     * ‹A‚è’l‚Í—LŒø‚È(Readƒƒ\ƒbƒh‚ªtrue‚ð•Ô‹p‚µ‚½)ƒfƒoƒCƒX‚Ì
-     * •Ô‚è’l‚Ì˜_—˜aD
+     * ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Sï¿½Ä‚Ìƒfï¿½oï¿½Cï¿½Xï¿½ï¿½Readï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½ï¿½D
+     * ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍCï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½D
+     * ï¿½Aï¿½ï¿½lï¿½Í—Lï¿½ï¿½ï¿½ï¿½(Readï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½trueï¿½ï¿½Ô‹pï¿½ï¿½ï¿½ï¿½)ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½
+     * ï¿½Ô‚ï¿½lï¿½Ì˜_ï¿½ï¿½ï¿½aï¿½D
      * </P>
      */
     bool Read (UINT32 adr, UINT32 & val, UINT32 id=0)
     {
       bool ret = false;
       UINT32 vtmp = 0;
-      std::vector < IDevice * >::iterator it;
-
       val = 0;
-      for (it = vd.begin (); it != vd.end (); it++)
-      {
-        if ((*it)->Read (adr, vtmp))
-        {
+      for (int i = 0; i < vd_num; i++) {
+        if (vd_ptr[i]->Read(adr, vtmp)) {
           val |= vtmp;
           ret = true;
         }
@@ -225,11 +221,11 @@ namespace xgm
   };
 
   /**
-   * ƒŒƒCƒ„[
+   * ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[
    *
    * <P>
-   * ƒoƒX‚ÆŽ—‚Ä‚¢‚é‚ªC“Ç‚Ý‘‚«‚Ì“®ì‚ð‘SƒfƒoƒCƒX‚É“`”d‚³‚¹‚È‚¢D
-   * Å‰‚É“Ç‚Ý‘‚«‚É¬Œ÷‚µ‚½ƒfƒoƒCƒX‚ð”­Œ©‚µ‚½Žž“_‚ÅI—¹‚·‚éD
+   * ï¿½oï¿½Xï¿½ÆŽï¿½ï¿½Ä‚ï¿½ï¿½é‚ªï¿½Cï¿½Ç‚Ýï¿½ï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½ï¿½Sï¿½fï¿½oï¿½Cï¿½Xï¿½É“`ï¿½dï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½D
+   * ï¿½Åï¿½ï¿½É“Ç‚Ýï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½ð”­Œï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ÅIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½D
    * </P>
    */
   class Layer : public Bus
@@ -237,39 +233,41 @@ namespace xgm
   protected:
   public:
     /**
-     * ‘‚«ž‚Ý
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * <P>
-     * Žæ‚è•t‚¯‚ç‚ê‚Ä‚¢‚éƒfƒoƒCƒX‚ÌWriteƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·D
-     * ŒÄ‚Ño‚µ‡˜‚ÍCƒfƒoƒCƒX‚ªŽæ‚è•t‚¯‚ç‚ê‚½‡˜‚É“™‚µ‚¢D
-     * Write‚É¬Œ÷‚µ‚½ƒfƒoƒCƒX‚ªŒ©‚Â‚©‚Á‚½Žž“_‚ÅI—¹D
+     * ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½Writeï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½ï¿½D
+     * ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍCï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½D
+     * Writeï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ÅIï¿½ï¿½ï¿½D
      * </P>
      */
     bool Write (UINT32 adr, UINT32 val, UINT32 id=0)
     {
-      std::vector < IDevice * >::iterator it;
-      for (it = vd.begin (); it != vd.end (); it++)
-        if ((*it)->Write (adr, val))
+      for (int i = 0; i < vd_num; i++) {
+        if (vd_ptr[i]->Write(adr, val)) {
           return true;
+        }
+      }
       return false;
     }
 
     /**
-     * “Ç‚Ýž‚Ý
+     * ï¿½Ç‚Ýï¿½ï¿½ï¿½
      *
      * <P>
-     * Žæ‚è•t‚¯‚ç‚ê‚Ä‚¢‚éƒfƒoƒCƒX‚ÌReadƒƒ\ƒbƒh‚ðŒÄ‚Ño‚·D
-     * ŒÄ‚Ño‚µ‡˜‚ÍCƒfƒoƒCƒX‚ªŽæ‚è•t‚¯‚ç‚ê‚½‡˜‚É“™‚µ‚¢D
-     * Read‚É¬Œ÷‚µ‚½ƒfƒoƒCƒX‚ªŒ©‚Â‚©‚Á‚½Žž“_‚ÅI—¹D
+     * ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½Readï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½ï¿½Ä‚Ñoï¿½ï¿½ï¿½D
+     * ï¿½Ä‚Ñoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍCï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½ï¿½ï¿½É“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½D
+     * Readï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ÅIï¿½ï¿½ï¿½D
      * </P>
      */
     bool Read (UINT32 adr, UINT32 & val, UINT32 id=0)
     {
-      std::vector < IDevice * >::iterator it;
       val = 0;
-      for (it = vd.begin (); it != vd.end (); it++)
-        if ((*it)->Read (adr, val))
+      for (int i = 0; i < vd_num; i++) {
+        if (vd_ptr[i]->Read(adr, val)) {
           return true;
+        }
+      }
       return false;
     }
   };

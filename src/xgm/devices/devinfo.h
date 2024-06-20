@@ -1,7 +1,7 @@
 #ifndef _DEVINFO_H_
 #define _DEVINFO_H_
 #include <math.h>
-// ƒfƒoƒCƒXî•ñ
+// ï¿½fï¿½oï¿½Cï¿½Xï¿½ï¿½ï¿½
 namespace xgm
 {
   class IDeviceInfo
@@ -15,22 +15,22 @@ namespace xgm
   {
   public:
     virtual IDeviceInfo *Clone()=0;
-    // Œ»İ‚Ìo—Í’l‚ğ‚»‚Ì‚Ü‚Ü•Ô‚·
+    // ï¿½ï¿½ï¿½İ‚Ìoï¿½Í’lï¿½ï¿½ï¿½ï¿½ï¿½Ì‚Ü‚Ü•Ô‚ï¿½
     virtual INT32 GetOutput()=0;
-    // ü”g”‚ğHz‚Å•Ô‚·
+    // ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½Hzï¿½Å•Ô‚ï¿½
     virtual double GetFreqHz()=0;
-    // ü”g”‚ğƒfƒoƒCƒXˆË‘¶’l‚Å•Ô‚·D
+    // ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½Xï¿½Ë‘ï¿½ï¿½lï¿½Å•Ô‚ï¿½ï¿½D
     virtual UINT32 GetFreq()=0;
-    // ‰¹—Ê‚ğ•Ô‚·
+    // ï¿½ï¿½ï¿½Ê‚ï¿½Ô‚ï¿½
     virtual INT32 GetVolume()=0;
-    // ‰¹—Ê‚ÌÅ‘å’l‚ğ•Ô‚·
+    // ï¿½ï¿½ï¿½Ê‚ÌÅ‘ï¿½lï¿½ï¿½Ô‚ï¿½
     virtual INT32 GetMaxVolume()=0;
-    // ”­‰¹’†‚È‚çtrue OFF‚È‚çfalse
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½true OFFï¿½È‚ï¿½false
     virtual bool GetKeyStatus()=0;
-    // ƒg[ƒ“”Ô†
+    // ï¿½gï¿½[ï¿½ï¿½ï¿½Ôï¿½
     virtual INT32 GetTone()=0;
 
-    // ü”g”‚ğƒm[ƒg”Ô†‚É•ÏŠ·D0x60‚ªo4c 0‚Í–³Œø
+    // ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½mï¿½[ï¿½gï¿½Ôï¿½ï¿½É•ÏŠï¿½ï¿½D0x60ï¿½ï¿½o4c 0ï¿½Í–ï¿½ï¿½ï¿½
     static int GetNote(double freq)
     {
       const double LOG2_440 = 8.7813597135246596040696824762152;
@@ -44,39 +44,43 @@ namespace xgm
     }
   };
 
-  /* TrackInfo ‚ğ ƒoƒbƒtƒ@ƒŠƒ“ƒO */
+  /* TrackInfo ï¿½ï¿½ ï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½O */
   class InfoBuffer
   {
     int bufmax;
     int index;
-    std::pair<int, IDeviceInfo*> *buffer;
+    struct DevicePair {
+      IDeviceInfo* ptr;
+      int pos;  
+    } buffer[1024];
 
   public:
     InfoBuffer(int max=60*10)
     {
       index = 0;
       bufmax = max;
-      buffer = new std::pair<int, IDeviceInfo*>[bufmax];
       for(int i=0;i<bufmax;i++)
       {
-        buffer[i].first = 0;
-        buffer[i].second = NULL;
+        buffer[i].ptr = nullptr;
       }
     }
     virtual ~InfoBuffer()
     {
-      for(int i=0;i<bufmax;i++)
-        delete buffer[i].second;
-      delete [] buffer;
+      for(int i=0;i<bufmax;i++) {
+        if (buffer[i].ptr) {
+          delete buffer[i].ptr;
+          buffer[i].ptr = nullptr;
+        }
+      }
     }
 
     virtual void Clear()
     {
-      for(int i=0;i<bufmax;i++)
-      {
-        delete buffer[i].second;
-        buffer[i].first = 0;
-        buffer[i].second = NULL;
+      for(int i=0;i<bufmax;i++) {
+        if (buffer[i].ptr) {
+          delete buffer[i].ptr;
+          buffer[i].ptr = nullptr;
+        }
       }
     }
 
@@ -84,9 +88,11 @@ namespace xgm
     {
       if(di)
       {
-        delete buffer[index].second;
-        buffer[index].first=pos;
-        buffer[index].second=di->Clone();
+        if(buffer[index].ptr) {
+          delete buffer[index].ptr;
+        }
+        buffer[index].pos=pos;
+        buffer[index].ptr=di->Clone();
         index = (index+1)%bufmax;
       }
     }
@@ -94,10 +100,10 @@ namespace xgm
     virtual IDeviceInfo *GetInfo(int pos)
     {
       if(pos==-1)
-        return buffer[(index+bufmax-1)%bufmax].second;
+        return buffer[(index+bufmax-1)%bufmax].ptr;
 
       for(int i=(index+bufmax-1)%bufmax; i!=index; i=(i+bufmax-1)%bufmax)
-        if(buffer[i].first<=pos) return buffer[i].second;
+        if(buffer[i].pos<=pos) return buffer[i].ptr;
       return NULL;
     }
   };
