@@ -33,7 +33,7 @@ OBJECTS += value.o
 
 all: nsfplay
 
-nsfplay: ${OBJECTS}
+nsfplay: src/cli.cpp ${OBJECTS}
 	${CPP} -o nsfplay src/cli.cpp ${OBJECTS}
 
 clean:
