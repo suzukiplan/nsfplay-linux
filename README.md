@@ -37,8 +37,9 @@ make
 
 ## Usage
 
-```bash
-./nsfplay /path/to/file.nsf
+```
+./nsfplay [-t track_number]
+          /path/to/file.nsf
 ```
 
 ## License

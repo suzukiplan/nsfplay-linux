@@ -24,14 +24,35 @@ FILE* fopen_utf8(const char* path, const char* mode)
 
 int main(int argc, char* argv[])
 {
-    if (argc < 2) {
-        puts("usage: nsfplay /path/to/file.nsf");
+    const char* path = nullptr;
+    int trackNumber = 0;
+    bool error = false;
+    for (int i = 1; !error && i < argc; i++) {
+        if ('-' == argv[i][0]) {
+            switch (argv[i][1]) {
+                case 't':
+                    if (argc <= ++i) {
+                        error = true;
+                    } else {
+                        trackNumber = atoi(argv[i]);
+                    }
+                    break;
+                default:
+                    error = true;
+            }
+        } else {
+            path = argv[i];
+        }
+    }
+    if (error || !path) {
+        puts("usage: nsfplay [-t track_number]");
+        puts("               /path/to/file.nsf");
         return 1;
     }
     xgm::NSFPlayerConfig config;
     xgm::NSF nsf;
     xgm::NSFPlayer player;
-    if (!nsf.LoadFile(argv[1])) {
+    if (!nsf.LoadFile(path)) {
         puts("File load error");
         return -1;
     }
@@ -46,7 +67,7 @@ int main(int argc, char* argv[])
     player.Load(&nsf);
     player.SetPlayFreq(SAMPLING_RATE);
     player.SetChannels(SAMPLING_CH);
-    player.SetSong(0);
+    player.SetSong(trackNumber);
     player.Reset();
 
     // initialize SDL sound system
