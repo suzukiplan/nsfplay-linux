@@ -43,4 +43,21 @@ make
 
 ## License
 
-complex licenses（確認中）
+- [./src/cli.cpp](./src/cli.cpp): [LICENSE-cli.txt](./LICENSE-cli.txt) (GPLv3)
+  - Copyright (c) 2024, Yoji Suzuki
+- Part of NEZplug: [LICENSE-NEZplug.txt](./LICENSE-NEZplug.txt) (Free Software)
+  - Copyright (c) Mamiya (mamiya@proc.org.tohoku.ac.jp)
+- KM6502: [LICENSE-km6502.txt](./LICENSE-km6502.txt) (PDS)
+  - Copyright (c) Mamiya (mamiya@proc.org.tohoku.ac.jp)
+- emu2149: [LICENSE-emu2149](./LICENSE-emu2149.txt) (MIT)
+  - Copyright (c) 2014 Mitsutaka Okazaki
+  - https://github.com/digital-sound-antiques/emu2149
+- emu2212: [LICENSE-emu2212](./LICENSE-emu2212.txt) (MIT)
+  - Copyright (c) 2014 Mitsutaka Okazaki
+  - https://github.com/digital-sound-antiques/emu2212
+- emu2413: [LICENSE-emu2413](./LICENSE-emu2413.txt) (MIT)
+  - Copyright (c) 2001-2019 Mitsutaka Okazaki
+  - https://github.com/digital-sound-antiques/emu2413
+- VRC7 tones
+  - License unknown
+  - Multiple copyrighted works are mixed together.

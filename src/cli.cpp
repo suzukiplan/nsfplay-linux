@@ -1,3 +1,8 @@
+/**
+ * NSFPlay for command line
+ * Copyright (c) 2024, Yoji Suzuki
+ * License under GPLv3
+ */
 #include <stdio.h>
 #include <stdint.h>
 #include "./xgm/player/nsf/nsfplay.h"
