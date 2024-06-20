@@ -5,7 +5,7 @@
  */
 #include <stdio.h>
 #include <stdint.h>
-#include "./xgm/player/nsf/nsfplay.h"
+#include "nsfplay.hpp"
 #include "SDL.h"
 
 #define SAMPLING_RATE 44100
@@ -13,8 +13,8 @@
 
 static void audioCallback(void* userdata, Uint8* stream, int len)
 {
-    xgm::NSFPlayer* player = (xgm::NSFPlayer*)userdata;
-    player->Render((xgm::INT16*)stream, len / 2);
+    NSFPlayer* player = (NSFPlayer*)userdata;
+    player->Render((int16_t*)stream, len / 2);
 }
 
 FILE* fopen_utf8(const char* path, const char* mode)
@@ -49,27 +49,21 @@ int main(int argc, char* argv[])
         puts("               /path/to/file.nsf");
         return 1;
     }
-    xgm::NSFPlayerConfig config;
     xgm::NSF nsf;
-    xgm::NSFPlayer player;
+    NSFPlayer player;
     if (!nsf.LoadFile(path)) {
         puts("File load error");
         return -1;
     }
-    printf("Title: %s\n",nsf.title);
-    printf("Artist: %s\n",nsf.artist);
-    printf("Copyright: %s\n",nsf.copyright);
-    printf("Ripper: %s\n",nsf.ripper);
-    config["MASTER_VOLUME"] = 256;
-    config["APU2_OPTION5"] = 0;
-    config["APU2_OPTION7"] = 0;
-    player.SetConfig(&config);
+    printf("Title: %s\n", nsf.title);
+    printf("Artist: %s\n", nsf.artist);
+    printf("Copyright: %s\n", nsf.copyright);
+    printf("Ripper: %s\n", nsf.ripper);
     player.Load(&nsf);
     player.SetPlayFreq(SAMPLING_RATE);
     player.SetChannels(SAMPLING_CH);
     player.SetSong(trackNumber);
     player.Reset();
-puts("foo");
 
     // initialize SDL sound system
     if (SDL_Init(SDL_INIT_AUDIO)) {

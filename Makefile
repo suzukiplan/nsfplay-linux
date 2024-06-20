@@ -7,8 +7,6 @@ CPPFLAGS = --std=c++11 ${CFLAGS}
 CPP = g++ ${CPPFLAGS}
 CC = gcc ${CFLAGS}
 OBJECTS = nsf.o
-OBJECTS += nsfconfig.o
-OBJECTS += nsfplay.o
 OBJECTS += ppls.o
 OBJECTS += sstream.o
 OBJECTS += echo.o
@@ -33,24 +31,17 @@ OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
 OBJECTS += emu2149.o
 OBJECTS += emu2212.o
-OBJECTS += value.o
 
 all: nsfplay
 	./nsfplay test.nsf
 
-nsfplay: src/cli.cpp ${OBJECTS}
+nsfplay: src/cli.cpp src/nsfplay.hpp ${OBJECTS}
 	${CPP} -o nsfplay src/cli.cpp ${OBJECTS} -lSDL2
 
 clean:
 	rm -f ${OBJECTS}
 
 nsf.o: ./src/xgm/player/nsf/nsf.cpp
-	${CPP} -c $<
-
-nsfconfig.o: ./src/xgm/player/nsf/nsfconfig.cpp
-	${CPP} -c $<
-
-nsfplay.o: ./src/xgm/player/nsf/nsfplay.cpp
 	${CPP} -c $<
 
 ppls.o: ./src/xgm/player/nsf/pls/ppls.cpp
@@ -130,6 +121,3 @@ emu2212.o: ./src/xgm/devices/Sound/legacy/emu2212.c
 
 emu2413.o: ./src/xgm/devices/Sound/legacy/emu2413.c
 	${CC} -c $<
-
-value.o: ./src/vcm/value.cpp
-	${CPP} -c $<
