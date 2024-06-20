@@ -10,11 +10,11 @@
 
 本リポジトリでは、オリジナルの NSFPlay から VRC7 の機能を削除する修正をしています。
 
-コマンドを実行すれば VRC7 対応状態に戻すことができます。
-
-```
-git checkout 750f51f8e1457c51b60b051c44edc6e9da7b6d93
-```
+> 以下のコマンドを実行すれば VRC7 対応状態にすることができます。
+>
+> ```
+> git checkout 750f51f8e1457c51b60b051c44edc6e9da7b6d93
+> ```
 
 ## How to Execute
 
