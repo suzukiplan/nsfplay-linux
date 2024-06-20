@@ -571,6 +571,10 @@ void sjis_legacy(char* s, const unsigned int length)
     use_n106 = soundchip & 16 ? true : false;
     use_fme7 = soundchip & 32 ? true : false;
 
+    if (use_vrc7) {
+      nsf_error = "VRC7 is not supported";
+      return false;
+    }
     memcpy (extra, image + 0x7c, 4);
 
     delete[]body;

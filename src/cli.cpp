@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
     player.SetChannels(SAMPLING_CH);
     player.SetSong(trackNumber);
     player.Reset();
+puts("foo");
 
     // initialize SDL sound system
     if (SDL_Init(SDL_INIT_AUDIO)) {

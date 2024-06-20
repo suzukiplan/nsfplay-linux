@@ -31,10 +31,8 @@ OBJECTS += nes_fme7.o
 OBJECTS += nes_mmc5.o
 OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
-OBJECTS += nes_vrc7.o
 OBJECTS += emu2149.o
 OBJECTS += emu2212.o
-OBJECTS += emu2413.o
 OBJECTS += value.o
 
 all: nsfplay

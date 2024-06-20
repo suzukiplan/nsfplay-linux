@@ -155,7 +155,6 @@ NSFPlayerConfig::NSFPlayerConfig () : PlayerConfig ()
         NES_MMC5::OPT_END,
         NES_N106::OPT_END,
         NES_VRC6::OPT_END,
-        NES_VRC7::OPT_END,
         NES_FDS::OPT_END,
     };
 
@@ -173,6 +172,9 @@ NSFPlayerConfig::NSFPlayerConfig () : PlayerConfig ()
 
     for (j = 0; j < DEVICE_OPTION_MAX[i]; j++)
     {
+      if (i == VRC7) {
+        continue;
+      }
       static char itoa[] = "0123456789ABCDEF";
       CreateValue((std::string)dname[i]+"_OPTION"+itoa[j], DEFAULT_DEVICE_OPTION[i][j]);
     }
