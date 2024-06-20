@@ -1,5 +1,16 @@
 #include <stdio.h>
+#include <stdint.h>
 #include "./xgm/player/nsf/nsfplay.h"
+#include "SDL.h"
+
+#define SAMPLING_RATE 44100
+#define SAMPLING_CH 1
+
+static void audioCallback(void* userdata, Uint8* stream, int len)
+{
+    xgm::NSFPlayer* player = (xgm::NSFPlayer*)userdata;
+    player->Render((xgm::INT16*)stream, len / 2);
+}
 
 FILE* fopen_utf8(const char* path, const char* mode)
 {
@@ -28,10 +39,36 @@ int main(int argc, char* argv[])
     config["APU2_OPTION7"] = 0;
     player.SetConfig(&config);
     player.Load(&nsf);
-    player.SetPlayFreq(44100);
-    player.SetChannels(1);
+    player.SetPlayFreq(SAMPLING_RATE);
+    player.SetChannels(SAMPLING_CH);
     player.SetSong(0);
     player.Reset();
-    return 0;
 
+    // initialize SDL sound system
+    if (SDL_Init(SDL_INIT_AUDIO)) {
+        puts("SDL_Init failed");
+        return -1;
+    }
+
+    SDL_AudioSpec desired;
+    SDL_AudioSpec obtained;
+    desired.freq = SAMPLING_RATE;
+    desired.format = AUDIO_S16LSB;
+    desired.channels = SAMPLING_CH;
+    desired.samples = 735; // desired.freq * 20 / 1000;
+    desired.callback = audioCallback;
+    desired.userdata = &player;
+    auto audioDeviceId = SDL_OpenAudioDevice(nullptr, 0, &desired, &obtained, 0);
+    if (0 == audioDeviceId) {
+        puts("SDL_OpenAudioDevice failed");
+        return -1;
+    }
+    SDL_PauseAudioDevice(audioDeviceId, 0);
+
+    printf("Press enter to exit...\n");
+    fgetc(stdin);
+
+    SDL_CloseAudioDevice(audioDeviceId);
+    SDL_Quit();
+    return 0;
 }

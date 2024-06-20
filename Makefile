@@ -1,5 +1,10 @@
-CPP = g++ -O2 --std=c++11
-CC = gcc -O2
+CFLAGS = -O2
+CFLAGS += -I/usr/include/SDL2
+CFLAGS += -I/usr/local/include/SDL2
+CFLAGS += -I/opt/X11/include
+CPPFLAGS = --std=c++11 ${CFLAGS}
+CPP = g++ ${CPPFLAGS}
+CC = gcc ${CFLAGS}
 OBJECTS = nsf.o
 OBJECTS += nsfconfig.o
 OBJECTS += nsfplay.o
@@ -35,7 +40,7 @@ all: nsfplay
 	./nsfplay test.nsf
 
 nsfplay: src/cli.cpp ${OBJECTS}
-	${CPP} -o nsfplay src/cli.cpp ${OBJECTS}
+	${CPP} -o nsfplay src/cli.cpp ${OBJECTS} -lSDL2
 
 clean:
 	rm -f ${OBJECTS}
