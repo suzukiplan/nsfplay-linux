@@ -62,3 +62,4 @@ make
 - VRC7 tones
   - License unknown
   - Multiple copyrighted works are mixed together.
+  - **NOTE: We have not been able to confirm this, but if it contains the same tone data as the original OPLL, we believe that redistribution is not possible.**
