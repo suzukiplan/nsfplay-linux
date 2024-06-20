@@ -27,6 +27,12 @@ cd nsfplay-linux
 make
 ```
 
+## Usage
+
+```bash
+nsfplay /path/to/file.nsf
+```
+
 ## License
 
 complex licenses（確認中）
