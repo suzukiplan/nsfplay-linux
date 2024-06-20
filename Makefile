@@ -2,6 +2,7 @@ CFLAGS = -O2
 CFLAGS += -I/usr/include/SDL2
 CFLAGS += -I/usr/local/include/SDL2
 CFLAGS += -I/opt/X11/include
+CFLAGS += -DNDEBUG
 CPPFLAGS = --std=c++11 ${CFLAGS}
 CPP = g++ ${CPPFLAGS}
 CC = gcc ${CFLAGS}
