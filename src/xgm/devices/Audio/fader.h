@@ -1,7 +1,6 @@
 #ifndef _FADER_H_
 #define _FADER_H_
 #include "../device.h"
-#include <vector>
 
 namespace xgm
 {

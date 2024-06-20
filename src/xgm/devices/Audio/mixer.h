@@ -1,15 +1,14 @@
 #ifndef _MIXER_H_
 #define _MIXER_H_
 #include "../device.h"
-#include <vector>
 
 namespace xgm
 {
   class Mixer : virtual public IRenderable
   {
   protected:
-    typedef std::vector < IRenderable * >DeviceList;
-    DeviceList dlist;
+    IRenderable* dlist[256];
+    int dlist_num;
 
   public:
       Mixer ()
@@ -23,12 +22,12 @@ namespace xgm
 
     void DetachAll ()
     {
-      dlist.clear ();
+      dlist_num = 0;
     }
 
     void Attach (IRenderable * dev)
     {
-      dlist.push_back (dev);
+      dlist[dlist_num++] = dev;
     }
 
     void Reset ()
@@ -48,23 +47,19 @@ namespace xgm
 
     virtual void Tick (UINT32 clocks)
     {
-      DeviceList::iterator it;
-      for (it = dlist.begin (); it != dlist.end (); it++)
-      {
-        (*it)->Tick (clocks);
+      for (int i = 0; i < dlist_num; i++) {
+        dlist[i]->Tick (clocks);
       }
     }
 
     virtual UINT32 Render (INT32 b[2])
     {
       INT32 tmp[2];
-      DeviceList::iterator it;
 
       b[0] = b[1] = 0;
 
-      for (it = dlist.begin (); it != dlist.end (); it++)
-      {
-        (*it)->Render (tmp);
+      for (int i = 0; i < dlist_num; i++) {
+        dlist[i]->Render (tmp);
         b[0] += tmp[0];
         b[1] += tmp[1];
       }
