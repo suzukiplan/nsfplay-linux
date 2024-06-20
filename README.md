@@ -16,6 +16,8 @@
 > git checkout 750f51f8e1457c51b60b051c44edc6e9da7b6d93
 > ```
 
+本リポジトリは、[VGS-Zero](https://github.com/suzukiplan/vgszero) で NSF を再生する機能を実装するためのコードベースの開発を目的としていて、VRC7 (OPLL) は音色の著作権の関係で VGS-Zero への組み込みが（リーガル的な判断で）できないと判断されたため、VRC7 の実装を削除する対応を行っています。
+
 ## How to Execute
 
 実行モジュールは配布していないのでビルドが必要です。
