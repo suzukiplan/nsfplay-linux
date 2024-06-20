@@ -1,4 +1,5 @@
 CPP = g++ -O2 --std=c++11
+CC = gcc -O2
 OBJECTS = nsf.o
 OBJECTS += nsfconfig.o
 OBJECTS += nsfplay.o
@@ -25,6 +26,10 @@ OBJECTS += nes_mmc5.o
 OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
 OBJECTS += nes_vrc7.o
+OBJECTS += emu2149.o
+OBJECTS += emu2212.o
+OBJECTS += emu2413.o
+OBJECTS += value.o
 
 all: nsfplay
 
@@ -112,9 +117,14 @@ nes_vrc6.o: ./src/xgm/devices/Sound/nes_vrc6.cpp
 nes_vrc7.o: ./src/xgm/devices/Sound/nes_vrc7.cpp
 	${CPP} -c $<
 
+emu2149.o: ./src/xgm/devices/Sound/legacy/emu2149.c
+	${CC} -c $<
 
+emu2212.o: ./src/xgm/devices/Sound/legacy/emu2212.c
+	${CC} -c $<
 
+emu2413.o: ./src/xgm/devices/Sound/legacy/emu2413.c
+	${CC} -c $<
 
-
-
-
+value.o: ./src/vcm/value.cpp
+	${CPP} -c $<
