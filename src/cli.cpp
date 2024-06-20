@@ -12,9 +12,9 @@ int main(int argc, char* argv[])
         puts("usage: nsfplay /path/to/file.nsf");
         return 1;
     }
-    xgm::NSFPlayer player;
     xgm::NSFPlayerConfig config;
     xgm::NSF nsf;
+    xgm::NSFPlayer player;
     if (!nsf.LoadFile(argv[1])) {
         puts("File load error");
         return -1;
