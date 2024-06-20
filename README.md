@@ -1,14 +1,32 @@
-# WIP: NSFPlay for Linux (CLI)
+# NSFPlay for Linux (CLI)
 
 ## About
 
-このリポジトリは NSFPlay のソースコードを解析しつつ Linux で動作するコマンドライン版の NSFPlay（nsfplay コマンド）を開発してみようと試みているものです。
+[NSFPlay](https://github.com/bbbradsmith/nsfplay) を SDL2 のサウンド機能を用いてコマンドラインで動作するようにしたものです。
 
-## WIP status
+## How to Build
 
-- [x] nsfplayの本体（xgm）をビルド
-- [ ] NSFPlay クラスを用いて指定された NSF を SDL2 で再生するコマンドを作成
+```bash
+# install GNU Make, GCC and other
+sudo apt install build-essential
+
+# install SDL2
+sudo apt-get install libsdl2-dev
+
+# install ALSA
+sudo apt-get install libasound2
+sudo apt-get install libasound2-dev
+
+# download repository
+git clone https://github.com/suzukiplan/nsfplay-linux
+
+# move to this dir
+cd nsfplay-linux
+
+# build
+make
+```
 
 ## License
 
-確認中
+complex licenses（確認中）
