@@ -32,6 +32,7 @@ OBJECTS += emu2413.o
 OBJECTS += value.o
 
 all: nsfplay
+	./nsfplay test.nsf
 
 nsfplay: src/cli.cpp ${OBJECTS}
 	${CPP} -o nsfplay src/cli.cpp ${OBJECTS}
