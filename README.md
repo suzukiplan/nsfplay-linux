@@ -2,9 +2,15 @@
 
 ## About
 
-[NSFPlay](https://github.com/bbbradsmith/nsfplay) を SDL2 のサウンド機能を用いてコマンドラインで動作するようにしたものです。
+[NSFPlay](https://github.com/bbbradsmith/nsfplay) のコア部分のソースコードを用いて CLI (コマンドライン) で .NSF ファイルを再生できるようにしてみたものです。
 
-## How to Build
+音声の再生には SDL2 のサウンド機能を使っています。
+
+## How to Execute
+
+実行モジュールは配布していないのでビルドが必要です。
+
+ビルド & 動作確認は Linux でのみしています。（若干手直しすれば macOS でも動かせるかもしれません）
 
 ```bash
 # install GNU Make, GCC and other
@@ -27,10 +33,12 @@ cd nsfplay-linux
 make
 ```
 
+ビルドが成功すると本リポジトリの [test.nsf](./test.nsf) が再生されます。
+
 ## Usage
 
 ```bash
-nsfplay /path/to/file.nsf
+./nsfplay /path/to/file.nsf
 ```
 
 ## License
