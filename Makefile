@@ -14,7 +14,6 @@ OBJECTS += nes_cpu.o
 OBJECTS += nes_bank.o
 OBJECTS += nes_mem.o
 OBJECTS += nsf2_vectors.o
-OBJECTS += ram64k.o
 OBJECTS += detect.o
 OBJECTS += nes_detect.o
 OBJECTS += nsf2_irq.o
