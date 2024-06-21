@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "../xtypes.h"
 #include "devinfo.h"
-#include "../debugout.h"
 
 namespace xgm
 {
@@ -50,7 +49,7 @@ class IDevice
     /**
      * �e��I�v�V������ݒ肷��(���������)
      */
-    virtual void SetOption(int id, int val){};
+    virtual void SetOption(int id, int val) {};
     virtual ~IDevice(){};
 };
 

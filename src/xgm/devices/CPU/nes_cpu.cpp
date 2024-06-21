@@ -4,9 +4,6 @@
 #include "../Memory/nes_mem.h"
 #include "../Misc/nsf2_irq.h"
 
-#define DEBUG_RW 0
-#define TRACE 0
-
 namespace xgm
 {
 
@@ -84,7 +81,6 @@ int NES_CPU::Exec(int clocks)
 
         Uword clock_start = context.clock;
         if (!breaked) {
-            // DEBUG_OUT("PC: 0x%04X\n", context.PC);
             exec(context, bus);
             if (context.PC == breakpoint) {
                 breaked = true;
@@ -126,7 +122,6 @@ int NES_CPU::Exec(int clocks)
                 }
             }
             fclocks_left_in_frame += fclocks_per_frame;
-            // DEBUG_OUT("NMI\n");
         }
     }
 
