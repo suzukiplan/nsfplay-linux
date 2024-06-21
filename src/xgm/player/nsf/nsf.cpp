@@ -11,10 +11,6 @@
 #include <string.h>
 #include "nsf.h"
 
-extern "C" {
-#include "pls/ppls.h"
-}
-
 namespace xgm
 {
 

@@ -7,7 +7,6 @@ CPPFLAGS = --std=c++11 ${CFLAGS}
 CPP = g++ ${CPPFLAGS}
 CC = gcc ${CFLAGS}
 OBJECTS = nsf.o
-OBJECTS += ppls.o
 OBJECTS += sstream.o
 OBJECTS += rconv.o
 OBJECTS += nes_cpu.o
