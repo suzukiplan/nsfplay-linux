@@ -9,7 +9,6 @@ CC = gcc ${CFLAGS}
 OBJECTS = nsf.o
 OBJECTS += ppls.o
 OBJECTS += sstream.o
-OBJECTS += echo.o
 OBJECTS += filter.o
 OBJECTS += rconv.o
 OBJECTS += nes_cpu.o
