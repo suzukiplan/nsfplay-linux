@@ -2,21 +2,24 @@
 #define _MEDIAN_FILTER_H_
 #include "../../xtypes.h"
 
-namespace xgm {
-  // ƒƒfƒBƒAƒ“ƒtƒBƒ‹ƒ^
-  class MedianFilter {
+namespace xgm
+{
+// ï¿½ï¿½ï¿½fï¿½Bï¿½Aï¿½ï¿½ï¿½tï¿½Bï¿½ï¿½ï¿½^
+class MedianFilter
+{
   private:
     int tapSize_;
-    int *tap_;
+    int* tap_;
     int tapIndex_;
     bool dirty_;
+
   public:
     MedianFilter(int tapSize);
     void Reset();
     virtual ~MedianFilter();
     void Put(INT32 wav);
     INT32 Get();
-  };
+};
 
-} // namespace
+} // namespace xgm
 #endif

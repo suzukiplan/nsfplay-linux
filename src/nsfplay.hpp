@@ -239,9 +239,6 @@ class NSFPlayer
             case REGION_DENDY: cpu.nes_basecycles = 1773448; break;
         }
 
-        // if (logcpu->GetLogLevel() > 0)
-        //     logcpu->Begin(GetTitleString());
-
         Reload();
         SetPlayFreq(rate);
         stack.Reset();
@@ -305,12 +302,12 @@ class NSFPlayer
         int out[2];
         int outm;
         uint32_t i;
-        int master_volume = 256;
+        int master_volume = 512;
         int mult_speed = 256;
         double apu_clock_per_sample = cpu.nes_basecycles / rate;
         double cpu_clock_per_sample = apu_clock_per_sample * ((double)(mult_speed) / 256.0);
 
-        for (i = 0; i < length; i++) {
+        for (i = 0; i < (uint32_t)length; i++) {
             total_render++;
             // tick CPU
             cpu_clock_rest += cpu_clock_per_sample;
@@ -420,8 +417,6 @@ class NSFPlayer
         // loop detector ends up at the front of the stack
         // (will capture all writes, but does not capture write)
         stack.Attach(ld);
-
-        cpu.SetLogger(nullptr);
 
         // setup player program at PLAYER_RESERVED ($4100)
         const uint8_t PLAYER_PROGRAM[] =

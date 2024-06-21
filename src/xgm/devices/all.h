@@ -19,5 +19,3 @@
 #include "Audio/echo.h"
 
 #include "Misc/nes_detect.h"
-
-

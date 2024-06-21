@@ -29,6 +29,6 @@ typedef signed short INT16;
 typedef signed int INT32;
 /** 64bit signed */
 typedef signed long long INT64;
-}
+} // namespace xgm
 
 #endif

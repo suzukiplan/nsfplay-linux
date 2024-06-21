@@ -16,34 +16,34 @@
 
 #define BASE_OF_ZERO 0x0000
 
-#define VEC_RESET	0xFFFC
-#define VEC_NMI		0xFFFA
-#define VEC_INT		0xFFFE
+#define VEC_RESET 0xFFFC
+#define VEC_NMI 0xFFFA
+#define VEC_INT 0xFFFE
 
-#define VEC_BRK		VEC_INT
+#define VEC_BRK VEC_INT
 
-#define IRQ_INIT	K6502_INIT
-#define IRQ_RESET	K6502_RESET
-#define IRQ_NMI		K6502_NMI
-#define IRQ_BRK		K6502_BRK
-#define IRQ_INT		K6502_INT
+#define IRQ_INIT K6502_INIT
+#define IRQ_RESET K6502_RESET
+#define IRQ_NMI K6502_NMI
+#define IRQ_BRK K6502_BRK
+#define IRQ_INT K6502_INT
 
 #ifdef STATIC_CONTEXT6502
 extern struct K6502_Context STATIC_CONTEXT6502;
-#define __THIS__	STATIC_CONTEXT6502
-#define __CONTEXT	void
-#define __CONTEXT_	/* none */
-#define __THISP		/* none */
-#define __THISP_	/* none */
+#define __THIS__ STATIC_CONTEXT6502
+#define __CONTEXT void
+#define __CONTEXT_ /* none */
+#define __THISP    /* none */
+#define __THISP_   /* none */
 #else
-#define __THIS__	(*pc)
-#define __CONTEXT	struct K6502_Context *pc
-#define __CONTEXT_	struct K6502_Context *pc,
-#define __THISP		pc
-#define __THISP_	pc,
+#define __THIS__ (*pc)
+#define __CONTEXT struct K6502_Context* pc
+#define __CONTEXT_ struct K6502_Context *pc,
+#define __THISP pc
+#define __THISP_ pc,
 #endif
 
-#define K_EXEC		K6502_Exec
+#define K_EXEC K6502_Exec
 
 #if USE_USERPOINTER
 #define __THIS_USER_ __THIS__.user,
@@ -55,30 +55,30 @@ extern struct K6502_Context STATIC_CONTEXT6502;
 #if USE_INLINEMMC
 static Uword Inline K_READ(__CONTEXT_ Uword adr)
 {
-	return __THIS__.ReadByte[adr >> USE_INLINEMMC](__THIS_USER_ adr);
+    return __THIS__.ReadByte[adr >> USE_INLINEMMC](__THIS_USER_ adr);
 }
 static void Inline K_WRITE(__CONTEXT_ Uword adr, Uword value)
 {
-	__THIS__.WriteByte[adr >> USE_INLINEMMC](__THIS_USER_ adr, value);
+    __THIS__.WriteByte[adr >> USE_INLINEMMC](__THIS_USER_ adr, value);
 }
 #else
 static Uword Inline K_READ(__CONTEXT_ Uword adr)
 {
-	return __THIS__.ReadByte(__THIS_USER_ adr);
+    return __THIS__.ReadByte(__THIS_USER_ adr);
 }
 static void Inline K_WRITE(__CONTEXT_ Uword adr, Uword value)
 {
-	__THIS__.WriteByte(__THIS_USER_ adr, value);
+    __THIS__.WriteByte(__THIS_USER_ adr, value);
 }
 #endif
 #else
 static Uword Inline K_READ(__CONTEXT_ Uword adr)
 {
-	return K6502_ReadByte(__THIS_USER_ adr);
+    return K6502_ReadByte(__THIS_USER_ adr);
 }
 static void Inline K_WRITE(__CONTEXT_ Uword adr, Uword value)
 {
-	K6502_WriteByte(__THIS_USER_ adr, value);
+    K6502_WriteByte(__THIS_USER_ adr, value);
 }
 #endif
 #ifndef K_READNP
@@ -92,11 +92,11 @@ static void Inline K_WRITE(__CONTEXT_ Uword adr, Uword value)
 #else
 static Uword Inline K_READZP(__CONTEXT_ Uword adr)
 {
-	return __THIS__.zeropage[adr];
+    return __THIS__.zeropage[adr];
 }
 static void Inline K_WRITEZP(__CONTEXT_ Uword adr, Uword value)
 {
-	__THIS__.zeropage[adr] = value;
+    __THIS__.zeropage[adr] = value;
 }
 #endif
 #endif

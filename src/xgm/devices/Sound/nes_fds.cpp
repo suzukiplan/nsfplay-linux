@@ -1,28 +1,29 @@
-#include <cstring>
+#include <string.h>
 #include "nes_fds.h"
 
-namespace xgm {
+namespace xgm
+{
 
 const int RC_BITS = 12;
 
-NES_FDS::NES_FDS ()
+NES_FDS::NES_FDS()
 {
     option[OPT_CUTOFF] = 2000;
     option[OPT_4085_RESET] = 0;
     option[OPT_WRITE_PROTECT] = 0; // not used here, see nsfplay.cpp
 
     rc_k = 0;
-    rc_l = (1<<RC_BITS);
+    rc_l = (1 << RC_BITS);
 
-    SetClock (DEFAULT_CLOCK);
-    SetRate (DEFAULT_RATE);
+    SetClock(DEFAULT_CLOCK);
+    SetRate(DEFAULT_RATE);
     sm[0] = 128;
     sm[1] = 128;
 
     Reset();
 }
 
-NES_FDS::~NES_FDS ()
+NES_FDS::~NES_FDS()
 {
 }
 
@@ -34,7 +35,7 @@ void NES_FDS::SetStereoMix(int trk, INT16 mixl, INT16 mixr)
     sm[1] = mixr;
 }
 
-ITrackInfo *NES_FDS::GetTrackInfo(int trk)
+ITrackInfo* NES_FDS::GetTrackInfo(int trk)
 {
     trkinfo.max_volume = 32;
     trkinfo.volume = last_vol;
@@ -42,18 +43,18 @@ ITrackInfo *NES_FDS::GetTrackInfo(int trk)
     trkinfo._freq = last_freq;
     trkinfo.freq = (double(last_freq) * clock) / (65536.0 * 64.0);
     trkinfo.tone = env_out[EMOD];
-    for(int i=0;i<64;i++)
+    for (int i = 0; i < 64; i++)
         trkinfo.wave[i] = wave[TWAV][i];
 
     return &trkinfo;
 }
 
-void NES_FDS::SetClock (double c)
+void NES_FDS::SetClock(double c)
 {
     clock = c;
 }
 
-void NES_FDS::SetRate (double r)
+void NES_FDS::SetRate(double r)
 {
     rate = r;
 
@@ -62,19 +63,19 @@ void NES_FDS::SetRate (double r)
     double leak = 0.0;
     if (cutoff > 0)
         leak = ::exp(-2.0 * 3.14159 * cutoff / rate);
-    rc_k = INT32(leak * double(1<<RC_BITS));
-    rc_l = (1<<RC_BITS) - rc_k;
+    rc_k = INT32(leak * double(1 << RC_BITS));
+    rc_l = (1 << RC_BITS) - rc_k;
 }
 
-void NES_FDS::SetOption (int id, int val)
+void NES_FDS::SetOption(int id, int val)
 {
-    if(id<OPT_END) option[id] = val;
+    if (id < OPT_END) option[id] = val;
 
     // update cutoff immediately
     if (id == OPT_CUTOFF) SetRate(rate);
 }
 
-void NES_FDS::Reset ()
+void NES_FDS::Reset()
 {
     master_io = true;
     master_vol = 0;
@@ -83,8 +84,7 @@ void NES_FDS::Reset ()
 
     rc_accum = 0;
 
-    for (int i=0; i<2; ++i)
-    {
+    for (int i = 0; i < 2; ++i) {
         ::memset(wave[i], 0, sizeof(wave[i]));
         freq[i] = 0;
         phase[i] = 0;
@@ -96,8 +96,7 @@ void NES_FDS::Reset ()
     mod_pos = 0;
     mod_write_pos = 0;
 
-    for (int i=0; i<2; ++i)
-    {
+    for (int i = 0; i < 2; ++i) {
         env_mode[i] = false;
         env_disable[i] = true;
         env_timer[i] = 0;
@@ -126,27 +125,20 @@ void NES_FDS::Reset ()
     Write(0x4089, 0x00); // wav write disable, max global volume}
 }
 
-void NES_FDS::Tick (UINT32 clocks)
+void NES_FDS::Tick(UINT32 clocks)
 {
     // clock envelopes
-    if (!env_halt && !wav_halt && (master_env_speed != 0))
-    {
-        for (int i=0; i<2; ++i)
-        {
-            if (!env_disable[i])
-            {
+    if (!env_halt && !wav_halt && (master_env_speed != 0)) {
+        for (int i = 0; i < 2; ++i) {
+            if (!env_disable[i]) {
                 env_timer[i] += clocks;
-                UINT32 period = ((env_speed[i]+1) * master_env_speed) << 3;
-                while (env_timer[i] >= period)
-                {
+                UINT32 period = ((env_speed[i] + 1) * master_env_speed) << 3;
+                while (env_timer[i] >= period) {
                     // clock the envelope
-                    if (env_mode[i])
-                    {
+                    if (env_mode[i]) {
                         if (env_out[i] < 32) ++env_out[i];
-                    }
-                    else
-                    {
-                        if (env_out[i] > 0 ) --env_out[i];
+                    } else {
+                        if (env_out[i] > 0) --env_out[i];
                     }
                     env_timer[i] -= period;
                 }
@@ -155,8 +147,7 @@ void NES_FDS::Tick (UINT32 clocks)
     }
 
     // clock the mod table
-    if (!mod_halt)
-    {
+    if (!mod_halt) {
         // advance phase, adjust for modulator
         UINT32 start_pos = phase[TMOD] >> 16;
         phase[TMOD] += (clocks * freq[TMOD]);
@@ -166,14 +157,12 @@ void NES_FDS::Tick (UINT32 clocks)
         phase[TMOD] = phase[TMOD] & 0x3FFFFF;
 
         // execute all clocked steps
-        for (UINT32 p = start_pos; p < end_pos; ++p)
-        {
+        for (UINT32 p = start_pos; p < end_pos; ++p) {
             INT32 wv = wave[TMOD][p & 0x3F];
             if (wv == 4) // 4 resets mod position
                 mod_pos = 0;
-            else
-            {
-                const INT32 BIAS[8] = { 0, 1, 2, 4, 0, -4, -2, -1 };
+            else {
+                const INT32 BIAS[8] = {0, 1, 2, 4, 0, -4, -2, -1};
                 mod_pos += BIAS[wv];
                 mod_pos &= 0x7F; // 7-bit clamp
             }
@@ -181,29 +170,29 @@ void NES_FDS::Tick (UINT32 clocks)
     }
 
     // clock the wav table
-    if (!wav_halt)
-    {
+    if (!wav_halt) {
         // complex mod calculation
         INT32 mod = 0;
         if (env_out[EMOD] != 0) // skip if modulator off
         {
             // convert mod_pos to 7-bit signed
-            INT32 pos = (mod_pos < 64) ? mod_pos : (mod_pos-128);
+            INT32 pos = (mod_pos < 64) ? mod_pos : (mod_pos - 128);
 
             // multiply pos by gain,
             // shift off 4 bits but with odd "rounding" behaviour
             INT32 temp = pos * env_out[EMOD];
             INT32 rem = temp & 0x0F;
             temp >>= 4;
-            if ((rem > 0) && ((temp & 0x80) == 0))
-            {
-                if (pos < 0) temp -= 1;
-                else         temp += 2;
+            if ((rem > 0) && ((temp & 0x80) == 0)) {
+                if (pos < 0)
+                    temp -= 1;
+                else
+                    temp += 2;
             }
 
             // wrap if range is exceeded
             while (temp >= 192) temp -= 256;
-            while (temp <  -64) temp += 256;
+            while (temp < -64) temp += 256;
 
             // multiply result by pitch,
             // shift off 6 bits, round to nearest
@@ -230,7 +219,7 @@ void NES_FDS::Tick (UINT32 clocks)
 
     // final output
     if (!wav_write)
-        fout = wave[TWAV][(phase[TWAV]>>16)&0x3F] * vol_out;
+        fout = wave[TWAV][(phase[TWAV] >> 16) & 0x3F] * vol_out;
 
     // NOTE: during wav_halt, the unit still outputs (at phase 0)
     // and volume can affect it if the first sample is nonzero.
@@ -242,16 +231,16 @@ void NES_FDS::Tick (UINT32 clocks)
     last_vol = vol_out;
 }
 
-UINT32 NES_FDS::Render (INT32 b[2])
+UINT32 NES_FDS::Render(INT32 b[2])
 {
     // 8 bit approximation of master volume
     const double MASTER_VOL = 2.4 * 1223.0; // max FDS vol vs max APU square (arbitrarily 1223)
-    const double MAX_OUT = 32.0f * 63.0f; // value that should map to master vol
+    const double MAX_OUT = 32.0f * 63.0f;   // value that should map to master vol
     const INT32 MASTER[4] = {
         int((MASTER_VOL / MAX_OUT) * 256.0 * 2.0f / 2.0f),
         int((MASTER_VOL / MAX_OUT) * 256.0 * 2.0f / 3.0f),
         int((MASTER_VOL / MAX_OUT) * 256.0 * 2.0f / 4.0f),
-        int((MASTER_VOL / MAX_OUT) * 256.0 * 2.0f / 5.0f) };
+        int((MASTER_VOL / MAX_OUT) * 256.0 * 2.0f / 5.0f)};
 
     INT32 v = fout * MASTER[master_vol] >> 8;
 
@@ -267,11 +256,10 @@ UINT32 NES_FDS::Render (INT32 b[2])
     return 2;
 }
 
-bool NES_FDS::Write (UINT32 adr, UINT32 val, UINT32 id)
+bool NES_FDS::Write(UINT32 adr, UINT32 val, UINT32 id)
 {
     // $4023 master I/O enable/disable
-    if (adr == 0x4023)
-    {
+    if (adr == 0x4023) {
         master_io = ((val & 2) != 0);
         return true;
     }
@@ -288,90 +276,86 @@ bool NES_FDS::Write (UINT32 adr, UINT32 val, UINT32 id)
         return true;
     }
 
-    switch (adr & 0x00FF)
-    {
-    case 0x80: // $4080 volume envelope
-        env_disable[EVOL] = ((val & 0x80) != 0);
-        env_mode[EVOL] = ((val & 0x40) != 0);
-        env_timer[EVOL] = 0;
-        env_speed[EVOL] = val & 0x3F;
-        if (env_disable[EVOL])
-            env_out[EVOL] = env_speed[EVOL];
-        return true;
-    case 0x81: // $4081 ---
-        return false;
-    case 0x82: // $4082 wave frequency low
-        freq[TWAV] = (freq[TWAV] & 0xF00) | val;
-        return true;
-    case 0x83: // $4083 wave frequency high / enables
-        freq[TWAV] = (freq[TWAV] & 0x0FF) | ((val & 0x0F) << 8);
-        wav_halt = ((val & 0x80) != 0);
-        env_halt = ((val & 0x40) != 0);
-        if (wav_halt)
-            phase[TWAV] = 0;
-        if (env_halt)
-        {
+    switch (adr & 0x00FF) {
+        case 0x80: // $4080 volume envelope
+            env_disable[EVOL] = ((val & 0x80) != 0);
+            env_mode[EVOL] = ((val & 0x40) != 0);
+            env_timer[EVOL] = 0;
+            env_speed[EVOL] = val & 0x3F;
+            if (env_disable[EVOL])
+                env_out[EVOL] = env_speed[EVOL];
+            return true;
+        case 0x81: // $4081 ---
+            return false;
+        case 0x82: // $4082 wave frequency low
+            freq[TWAV] = (freq[TWAV] & 0xF00) | val;
+            return true;
+        case 0x83: // $4083 wave frequency high / enables
+            freq[TWAV] = (freq[TWAV] & 0x0FF) | ((val & 0x0F) << 8);
+            wav_halt = ((val & 0x80) != 0);
+            env_halt = ((val & 0x40) != 0);
+            if (wav_halt)
+                phase[TWAV] = 0;
+            if (env_halt) {
+                env_timer[EMOD] = 0;
+                env_timer[EVOL] = 0;
+            }
+            return true;
+        case 0x84: // $4084 mod envelope
+            env_disable[EMOD] = ((val & 0x80) != 0);
+            env_mode[EMOD] = ((val & 0x40) != 0);
+            env_timer[EMOD] = 0;
+            env_speed[EMOD] = val & 0x3F;
+            if (env_disable[EMOD])
+                env_out[EMOD] = env_speed[EMOD];
+            return true;
+        case 0x85: // $4085 mod position
+            mod_pos = val & 0x7F;
+            // not hardware accurate., but prevents detune due to cycle inaccuracies
+            // (notably in Bio Miracle Bokutte Upa)
+            if (option[OPT_4085_RESET])
+                phase[TMOD] = mod_write_pos << 16;
+            return true;
+        case 0x86: // $4086 mod frequency low
+            freq[TMOD] = (freq[TMOD] & 0xF00) | val;
+            return true;
+        case 0x87: // $4087 mod frequency high / enable
+            freq[TMOD] = (freq[TMOD] & 0x0FF) | ((val & 0x0F) << 8);
+            mod_halt = ((val & 0x80) != 0);
+            if (mod_halt)
+                phase[TMOD] = phase[TMOD] & 0x3F0000; // reset accumulator phase
+            return true;
+        case 0x88: // $4088 mod table write
+            if (mod_halt) {
+                // writes to current playback position (there is no direct way to set phase)
+                wave[TMOD][(phase[TMOD] >> 16) & 0x3F] = val & 0x07;
+                phase[TMOD] = (phase[TMOD] + 0x010000) & 0x3FFFFF;
+                wave[TMOD][(phase[TMOD] >> 16) & 0x3F] = val & 0x07;
+                phase[TMOD] = (phase[TMOD] + 0x010000) & 0x3FFFFF;
+                mod_write_pos = phase[TMOD] >> 16; // used by OPT_4085_RESET
+            }
+            return true;
+        case 0x89: // $4089 wave write enable, master volume
+            wav_write = ((val & 0x80) != 0);
+            master_vol = val & 0x03;
+            return true;
+        case 0x8A: // $408A envelope speed
+            master_env_speed = val;
+            // haven't tested whether this register resets phase on hardware,
+            // but this ensures my inplementation won't spam envelope clocks
+            // if this value suddenly goes low.
             env_timer[EMOD] = 0;
             env_timer[EVOL] = 0;
-        }
-        return true;
-    case 0x84: // $4084 mod envelope
-        env_disable[EMOD] = ((val & 0x80) != 0);
-        env_mode[EMOD] = ((val & 0x40) != 0);
-        env_timer[EMOD] = 0;
-        env_speed[EMOD] = val & 0x3F;
-        if (env_disable[EMOD])
-            env_out[EMOD] = env_speed[EMOD];
-        return true;
-    case 0x85: // $4085 mod position
-        mod_pos = val & 0x7F;
-        // not hardware accurate., but prevents detune due to cycle inaccuracies
-        // (notably in Bio Miracle Bokutte Upa)
-        if (option[OPT_4085_RESET])
-            phase[TMOD] = mod_write_pos << 16;
-        return true;
-    case 0x86: // $4086 mod frequency low
-        freq[TMOD] = (freq[TMOD] & 0xF00) | val;
-        return true;
-    case 0x87: // $4087 mod frequency high / enable
-        freq[TMOD] = (freq[TMOD] & 0x0FF) | ((val & 0x0F) << 8);
-        mod_halt = ((val & 0x80) != 0);
-        if (mod_halt)
-            phase[TMOD] = phase[TMOD] & 0x3F0000; // reset accumulator phase
-        return true;
-    case 0x88: // $4088 mod table write
-        if (mod_halt)
-        {
-            // writes to current playback position (there is no direct way to set phase)
-            wave[TMOD][(phase[TMOD] >> 16) & 0x3F] = val & 0x07;
-            phase[TMOD] = (phase[TMOD] + 0x010000) & 0x3FFFFF;
-            wave[TMOD][(phase[TMOD] >> 16) & 0x3F] = val & 0x07;
-            phase[TMOD] = (phase[TMOD] + 0x010000) & 0x3FFFFF;
-            mod_write_pos = phase[TMOD] >> 16; // used by OPT_4085_RESET
-        }
-        return true;
-    case 0x89: // $4089 wave write enable, master volume
-        wav_write = ((val & 0x80) != 0);
-        master_vol = val & 0x03;
-        return true;
-    case 0x8A: // $408A envelope speed
-        master_env_speed = val;
-        // haven't tested whether this register resets phase on hardware,
-        // but this ensures my inplementation won't spam envelope clocks
-        // if this value suddenly goes low.
-        env_timer[EMOD] = 0;
-        env_timer[EVOL] = 0;
-        return true;
-    default:
-        return false;
+            return true;
+        default:
+            return false;
     }
     return false;
 }
 
-bool NES_FDS::Read (UINT32 adr, UINT32 & val, UINT32 id)
+bool NES_FDS::Read(UINT32 adr, UINT32& val, UINT32 id)
 {
-    if (adr >= 0x4040 && adr <= 0x407F)
-    {
+    if (adr >= 0x4040 && adr <= 0x407F) {
         // TODO: if wav_write is not enabled, the
         // read address may not be reliable? need
         // to test this on hardware.
@@ -394,4 +378,4 @@ bool NES_FDS::Read (UINT32 adr, UINT32 & val, UINT32 id)
     return false;
 }
 
-} // namespace
+} // namespace xgm

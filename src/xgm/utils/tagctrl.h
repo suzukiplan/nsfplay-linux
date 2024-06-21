@@ -3,13 +3,6 @@
 
 namespace xgm
 {
-} //namespace
-
-
-
-
-
-
-
+} // namespace xgm
 
 #endif

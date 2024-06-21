@@ -7,11 +7,11 @@
 
 namespace xgm
 {
-  /**
-   * シーケンス型演奏データ
-   */
-  class SoundData
-  {
+/**
+ * シーケンス型演奏データ
+ */
+class SoundData
+{
   public:
     SoundData(){};
     virtual ~SoundData(){};
@@ -22,13 +22,13 @@ namespace xgm
      * @param size  イメージのサイズ
      * @return 成功時 true 失敗時 false
      */
-    virtual bool Load(UINT8 *data, UINT32 size){ return false; }
+    virtual bool Load(UINT8* data, UINT32 size) { return false; }
 
     /**
      * ファイルからの読み込み
      * @param fn ファイル名（またはファイル情報を示す文字列）へのポインタ
      */
-    virtual bool LoadFile(const char *fn){ return false; }
+    virtual bool LoadFile(const char* fn) { return false; }
 
     /**
      * Error from last Load.
@@ -39,38 +39,38 @@ namespace xgm
      * タイトルの取得
      * @return タイトル情報
      */
-    virtual const char *GetTitleString(const char *format=NULL, int song=-1){ return ""; }
+    virtual const char* GetTitleString(const char* format = NULL, int song = -1) { return ""; }
 
     /**
      * タイトルの設定
      * @param title 新しいタイトルへのポインタ(255文字まで)
      */
-    virtual void SetTitleString(char *title){}
+    virtual void SetTitleString(char* title) {}
 
     /**
      * 演奏時間(ms)の取得
      */
-    virtual int GetLength(){ return 3*60*1000; }
+    virtual int GetLength() { return 3 * 60 * 1000; }
 
     /**
      * 演奏時間(ms)の設定
      */
-    virtual void SetLength(int time_in_ms){}
-  };
+    virtual void SetLength(int time_in_ms) {}
+};
 
-  /**
-   * 複数曲入り演奏データ
-   */
-  class SoundDataMSP : public SoundData
-  {
+/**
+ * 複数曲入り演奏データ
+ */
+class SoundDataMSP : public SoundData
+{
   public:
     bool enable_multi_tracks;
-    SoundDataMSP() : enable_multi_tracks(false){}
-    virtual ~SoundDataMSP(){}
-    virtual int GetSong()=0;
-    virtual void SetSong(int)=0;
-    virtual int GetSongNum()=0;
-  };
-}
+    SoundDataMSP() : enable_multi_tracks(false) {}
+    virtual ~SoundDataMSP() {}
+    virtual int GetSong() = 0;
+    virtual void SetSong(int) = 0;
+    virtual int GetSongNum() = 0;
+};
+} // namespace xgm
 
 #endif

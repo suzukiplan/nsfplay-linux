@@ -10,27 +10,27 @@
 
 namespace xgm
 {
-  class __DebugOut
-  {
+class __DebugOut
+{
   public:
-    static void printf (const char *format, ...)
+    static void printf(const char* format, ...)
     {
-      static char buf[1024];
-      va_list argl;
+        static char buf[1024];
+        va_list argl;
 
-        va_start (argl, format);
-        _vsnprintf (buf, 1024, format, argl);
-        OutputDebugString (buf);
-        va_end (argl);
+        va_start(argl, format);
+        _vsnprintf(buf, 1024, format, argl);
+        OutputDebugString(buf);
+        va_end(argl);
     }
-  };
+};
 #define DEBUG_OUT __DebugOut::printf
 
-  // overrides the next output sample (nsfplay.cpp)
-  // use to mark events in WAV output, turn quality high
-  // only works in _DEBUG build
-  extern int debug_mark;
-}
+// overrides the next output sample (nsfplay.cpp)
+// use to mark events in WAV output, turn quality high
+// only works in _DEBUG build
+extern int debug_mark;
+} // namespace xgm
 
 #else
 #ifdef NDEBUG

@@ -4,20 +4,20 @@
 
 namespace xgm
 {
-  // Layer‚É‹²‚ñ‚ÅC‚±‚ÌƒfƒoƒCƒXˆÈ‰º‚ÌƒfƒoƒCƒXƒAƒNƒZƒX‚ğŠ®‘S‚ÉƒuƒƒbƒN‚·‚éƒfƒoƒCƒX
-  class BlockingDevice : public IDevice
-  {
+// Layerï¿½É‹ï¿½ï¿½ï¿½ÅCï¿½ï¿½ï¿½Ìƒfï¿½oï¿½Cï¿½Xï¿½È‰ï¿½ï¿½Ìƒfï¿½oï¿½Cï¿½Xï¿½Aï¿½Nï¿½Zï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½Éƒuï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½fï¿½oï¿½Cï¿½X
+class BlockingDevice : public IDevice
+{
   public:
-    void Reset(){}
+    void Reset() {}
     bool Write(UINT32 adr, UINT32 val, UINT32 id = 0)
     {
-      return blocking;
+        return blocking;
     }
-    bool Read(UINT32 adr, UINT32 &val, UINT32 id = 0)
+    bool Read(UINT32 adr, UINT32& val, UINT32 id = 0)
     {
-      return false;
+        return false;
     }
-  };
-}// namespace
+};
+} // namespace xgm
 
 #endif _BLOCK_H_

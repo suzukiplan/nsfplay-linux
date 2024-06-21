@@ -18,43 +18,43 @@ class NES_MMC5;
 
 class RateConverter : public IRenderable
 {
-protected:
-	IRenderable * target;
-	double clock ,rate;
-	int mult;
-	INT32  tap[2][128];
-	double hr[128]; // H(z)
-	INT64  hri[128];
-	UINT32 clocks; // render clocks pending Tick
-	NES_CPU* cpu;
-	NES_DMC* dmc;
-	NES_MMC5* mmc5;
-	int cpu_clocks; // CPU clocks pending Tick
-	int cpu_rest; // extra clock accumulator (instructions will get ahead by a few clocks)
-	bool fast_skip;
+  protected:
+    IRenderable* target;
+    double clock, rate;
+    int mult;
+    INT32 tap[2][128];
+    double hr[128]; // H(z)
+    INT64 hri[128];
+    UINT32 clocks; // render clocks pending Tick
+    NES_CPU* cpu;
+    NES_DMC* dmc;
+    NES_MMC5* mmc5;
+    int cpu_clocks; // CPU clocks pending Tick
+    int cpu_rest;   // extra clock accumulator (instructions will get ahead by a few clocks)
+    bool fast_skip;
 
-	void ClockCPU(int c);
+    void ClockCPU(int c);
 
-public:
-	RateConverter ();
-	virtual ~ RateConverter ();
-	void Attach (IRenderable * t);
-	void Reset ();
-	void SetClock (double clock);
-	void SetRate (double rate);
-	virtual void Tick (UINT32 clocks_); // ticks get executed during Render
-	virtual UINT32 Render (INT32 b[2]);
-	virtual void Skip(); // Does ticks in lieu of Render
-	inline UINT32 FastRender(INT32 b[2]);
+  public:
+    RateConverter();
+    virtual ~RateConverter();
+    void Attach(IRenderable* t);
+    void Reset();
+    void SetClock(double clock);
+    void SetRate(double rate);
+    virtual void Tick(UINT32 clocks_); // ticks get executed during Render
+    virtual UINT32 Render(INT32 b[2]);
+    virtual void Skip(); // Does ticks in lieu of Render
+    inline UINT32 FastRender(INT32 b[2]);
 
-	// call TickCPU before each Tick
-	void TickCPU(int t) { cpu_clocks+=t; }
+    // call TickCPU before each Tick
+    void TickCPU(int t) { cpu_clocks += t; }
 
-	void SetCPU(NES_CPU* c) { cpu=c; }
-	void SetDMC(NES_DMC* d) { dmc=d; }
-	void SetMMC5(NES_MMC5* m) { mmc5=m; }
-	void SetFastSkip(bool s) { fast_skip=s; }
+    void SetCPU(NES_CPU* c) { cpu = c; }
+    void SetDMC(NES_DMC* d) { dmc = d; }
+    void SetMMC5(NES_MMC5* m) { mmc5 = m; }
+    void SetFastSkip(bool s) { fast_skip = s; }
 };
 
-} // namespace
+} // namespace xgm
 #endif

@@ -5,7 +5,7 @@
 
 #ifdef EMU2149_DLL_EXPORTS
 #define EMU2149_API __declspec(dllexport)
-#elif  EMU2149_DLL_IMPORTS
+#elif EMU2149_DLL_IMPORTS
 #define EMU2149_API __declspec(dllimport)
 #else
 #define EMU2149_API
@@ -15,18 +15,16 @@
 #define EMU2149_VOL_YM2149 0
 #define EMU2149_VOL_AY_3_8910 1
 
-#define PSG_MASK_CH(x) (1<<(x))
+#define PSG_MASK_CH(x) (1 << (x))
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-  typedef struct __PSG
-  {
+typedef struct __PSG {
 
     /* Volume Table */
-    e_uint32 *voltbl;
+    e_uint32* voltbl;
 
     e_uint8 reg[0x20];
     e_int32 out;
@@ -70,23 +68,22 @@ extern "C"
     /* I/O Ctrl */
     e_uint32 adr;
 
-  }
-  PSG;
+} PSG;
 
-  EMU2149_API void PSG_set_quality (PSG * psg, e_uint32 q);
-  EMU2149_API void PSG_set_rate (PSG * psg, e_uint32 r);
-  EMU2149_API PSG *PSG_new (e_uint32 clk, e_uint32 rate);
-  EMU2149_API void PSG_reset (PSG *);
-  EMU2149_API void PSG_delete (PSG *);
-  EMU2149_API void PSG_writeReg (PSG *, e_uint32 reg, e_uint32 val);
-  EMU2149_API void PSG_writeIO (PSG * psg, e_uint32 adr, e_uint32 val);
-  EMU2149_API e_uint8 PSG_readReg (PSG * psg, e_uint32 reg);
-  EMU2149_API e_uint8 PSG_readIO (PSG * psg);
-  EMU2149_API e_int16 PSG_calc (PSG *);
-  EMU2149_API void PSG_setVolumeMode (PSG * psg, int type);
-  EMU2149_API e_uint32 PSG_setMask (PSG *, e_uint32 mask);
-  EMU2149_API e_uint32 PSG_toggleMask (PSG *, e_uint32 mask);
-    
+EMU2149_API void PSG_set_quality(PSG* psg, e_uint32 q);
+EMU2149_API void PSG_set_rate(PSG* psg, e_uint32 r);
+EMU2149_API PSG* PSG_new(e_uint32 clk, e_uint32 rate);
+EMU2149_API void PSG_reset(PSG*);
+EMU2149_API void PSG_delete(PSG*);
+EMU2149_API void PSG_writeReg(PSG*, e_uint32 reg, e_uint32 val);
+EMU2149_API void PSG_writeIO(PSG* psg, e_uint32 adr, e_uint32 val);
+EMU2149_API e_uint8 PSG_readReg(PSG* psg, e_uint32 reg);
+EMU2149_API e_uint8 PSG_readIO(PSG* psg);
+EMU2149_API e_int16 PSG_calc(PSG*);
+EMU2149_API void PSG_setVolumeMode(PSG* psg, int type);
+EMU2149_API e_uint32 PSG_setMask(PSG*, e_uint32 mask);
+EMU2149_API e_uint32 PSG_toggleMask(PSG*, e_uint32 mask);
+
 #ifdef __cplusplus
 }
 #endif

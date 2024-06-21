@@ -1,31 +1,26 @@
 #ifndef _BROWSER_H_
 #define _BROWSER_H_
 
-
-namespace xgm 
+namespace xgm
 {
-  class Browser
-  {
+class Browser
+{
   private:
     int bufmax;
     int infoidx;
-    BrowserInfo *infobuf;
+    BrowserInfo* infobuf;
 
   public:
-    void Browser(int bufmax=256)
+    void Browser(int bufmax = 256)
     {
-
     }
 
-    BrowserInfo &GetInfo()
+    BrowserInfo& GetInfo()
     {
-      return infobuf[infoidx];
+        return infobuf[infoidx];
     }
+};
 
-    
-  };
-
-} // namespace
-
+} // namespace xgm
 
 #endif

@@ -5,69 +5,68 @@
 namespace xgm
 {
 
-  class Amplifier : virtual public IRenderable
-  {
+class Amplifier : virtual public IRenderable
+{
   protected:
-    IRenderable * target;
+    IRenderable* target;
     int mute, volume;
-	int combo;
+    int combo;
 
   public:
-    Amplifier ()
+    Amplifier()
     {
-      target = NULL;
-      mute = false;
-      volume = 64;
+        target = NULL;
+        mute = false;
+        volume = 64;
     }
 
-    ~Amplifier ()
+    ~Amplifier()
     {
     }
 
-    void Attach (IRenderable * p)
+    void Attach(IRenderable* p)
     {
-      target = p;
+        target = p;
     }
 
-    void Tick (UINT32 clocks)
+    void Tick(UINT32 clocks)
     {
-      assert (target);
-      target->Tick(clocks);
+        assert(target);
+        target->Tick(clocks);
     }
 
-    UINT32 Render (INT32 b[2])
+    UINT32 Render(INT32 b[2])
     {
-      assert (target);
-      if (mute)
-      {
-        b[0] = b[1] = 0;
+        assert(target);
+        if (mute) {
+            b[0] = b[1] = 0;
+            return 2;
+        }
+        target->Render(b);
+        b[0] = (b[0] * volume) / 16;
+        b[1] = (b[1] * volume) / 16;
+
         return 2;
-      }
-      target->Render (b);
-      b[0] = (b[0] * volume) / 16;
-      b[1] = (b[1] * volume) / 16;
-
-      return 2;
     }
 
-    void SetVolume (int v)
+    void SetVolume(int v)
     {
-      volume = v;
+        volume = v;
     }
-    int GetVolume ()
+    int GetVolume()
     {
-      return volume;
+        return volume;
     }
-    void SetMute (int m)
+    void SetMute(int m)
     {
-      mute = m;
+        mute = m;
     }
-    int GetMute ()
+    int GetMute()
     {
-      return mute;
+        return mute;
     }
-  };
+};
 
-}                               // namespace
+} // namespace xgm
 
 #endif

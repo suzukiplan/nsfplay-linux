@@ -1,44 +1,43 @@
-#include <cstring>
+#include <string.h>
 #include "nes_n106.h"
 
-namespace xgm {
+namespace xgm
+{
 
-NES_N106::NES_N106 ()
+NES_N106::NES_N106()
 {
     option[OPT_SERIAL] = 0;
     option[OPT_PHASE_READ_ONLY] = 0;
     option[OPT_LIMIT_WAVELENGTH] = 0;
-    SetClock (DEFAULT_CLOCK);
-    SetRate (DEFAULT_RATE);
-    for (int i=0; i < 8; ++i)
-    {
+    SetClock(DEFAULT_CLOCK);
+    SetRate(DEFAULT_RATE);
+    for (int i = 0; i < 8; ++i) {
         sm[0][i] = 128;
         sm[1][i] = 128;
     }
     Reset();
 }
 
-NES_N106::~NES_N106 ()
+NES_N106::~NES_N106()
 {
 }
 
-void NES_N106::SetStereoMix (int trk, INT16 mixl, INT16 mixr)
+void NES_N106::SetStereoMix(int trk, INT16 mixl, INT16 mixr)
 {
     if (trk < 0 || trk >= 8) return;
-    trk = 7-trk; // displayed channels are inverted
+    trk = 7 - trk; // displayed channels are inverted
     sm[0][trk] = mixl;
     sm[1][trk] = mixr;
 }
 
-ITrackInfo *NES_N106::GetTrackInfo (int trk)
+ITrackInfo* NES_N106::GetTrackInfo(int trk)
 {
     int channels = get_channels();
-    int channel = 7-trk; // invert the track display
+    int channel = 7 - trk; // invert the track display
 
     TrackInfoN106* t = &trkinfo[channel];
 
-    if (trk >= channels)
-    {
+    if (trk >= channels) {
         t->max_volume = 15;
         t->volume = 0;
         t->_freq = 0;
@@ -47,9 +46,7 @@ ITrackInfo *NES_N106::GetTrackInfo (int trk)
         t->output = 0;
         t->key = false;
         t->freq = 0;
-    }
-    else
-    {
+    } else {
         t->max_volume = 15;
         t->volume = get_vol(channel);
         t->_freq = get_freq(channel);
@@ -60,44 +57,36 @@ ITrackInfo *NES_N106::GetTrackInfo (int trk)
         t->key = (t->volume > 0) && (t->_freq > 0);
         t->freq = (double(t->_freq) * clock) / double(15 * 65536 * channels * t->wavelen);
 
-        for (int i=0; i < t->wavelen; ++i)
-            t->wave[i] = get_sample((i+t->tone)&0xFF);
+        for (int i = 0; i < t->wavelen; ++i)
+            t->wave[i] = get_sample((i + t->tone) & 0xFF);
     }
 
     return t;
 }
 
-void NES_N106::SetClock (double c)
+void NES_N106::SetClock(double c)
 {
     clock = c;
 }
 
-void NES_N106::SetRate (double r)
+void NES_N106::SetRate(double r)
 {
     rate = r;
 }
 
-void NES_N106::SetMask (int m)
+void NES_N106::SetMask(int m)
 {
     // bit reverse the mask,
     // N163 waves are displayed in reverse order
-    mask = 0
-        | ((m & (1<<0)) ? (1<<7) : 0)
-        | ((m & (1<<1)) ? (1<<6) : 0)
-        | ((m & (1<<2)) ? (1<<5) : 0)
-        | ((m & (1<<3)) ? (1<<4) : 0)
-        | ((m & (1<<4)) ? (1<<3) : 0)
-        | ((m & (1<<5)) ? (1<<2) : 0)
-        | ((m & (1<<6)) ? (1<<1) : 0)
-        | ((m & (1<<7)) ? (1<<0) : 0);
+    mask = 0 | ((m & (1 << 0)) ? (1 << 7) : 0) | ((m & (1 << 1)) ? (1 << 6) : 0) | ((m & (1 << 2)) ? (1 << 5) : 0) | ((m & (1 << 3)) ? (1 << 4) : 0) | ((m & (1 << 4)) ? (1 << 3) : 0) | ((m & (1 << 5)) ? (1 << 2) : 0) | ((m & (1 << 6)) ? (1 << 1) : 0) | ((m & (1 << 7)) ? (1 << 0) : 0);
 }
 
-void NES_N106::SetOption (int id, int val)
+void NES_N106::SetOption(int id, int val)
 {
-    if (id<OPT_END) option[id] = val;
+    if (id < OPT_END) option[id] = val;
 }
 
-void NES_N106::Reset ()
+void NES_N106::Reset()
 {
     master_disable = false;
     ::memset(reg, 0, sizeof(reg));
@@ -109,18 +98,18 @@ void NES_N106::Reset ()
     render_clock = 0;
     render_subclock = 0;
 
-    for (int i=0; i<8; ++i) fout[i] = 0;
+    for (int i = 0; i < 8; ++i) fout[i] = 0;
 
-    Write(0xE000, 0x00); // master disable off
-    Write(0xF800, 0x80); // select $00 with auto-increment
-    for (unsigned int i=0; i<0x80; ++i) // set all regs to 0
+    Write(0xE000, 0x00);                    // master disable off
+    Write(0xF800, 0x80);                    // select $00 with auto-increment
+    for (unsigned int i = 0; i < 0x80; ++i) // set all regs to 0
     {
         Write(0x4800, 0x00);
     }
     Write(0xF800, 0x00); // select $00 without auto-increment
 }
 
-void NES_N106::Tick (UINT32 clocks)
+void NES_N106::Tick(UINT32 clocks)
 {
     if (master_disable) return;
 
@@ -128,15 +117,14 @@ void NES_N106::Tick (UINT32 clocks)
 
     tick_clock += clocks;
     render_clock += clocks; // keep render in sync
-    while (tick_clock > 0)
-    {
-        int channel = 7-tick_channel;
+    while (tick_clock > 0) {
+        int channel = 7 - tick_channel;
 
         UINT32 phase = get_phase(channel);
-        UINT32 freq  = get_freq(channel);
-        UINT32 len   = get_len(channel);
-        UINT32 off   = get_off(channel);
-        INT32  vol   = get_vol(channel);
+        UINT32 freq = get_freq(channel);
+        UINT32 len = get_len(channel);
+        UINT32 off = get_off(channel);
+        INT32 vol = get_vol(channel);
 
         // accumulate 24-bit phase
         phase = (phase + freq) & 0x00FFFFFF;
@@ -160,7 +148,7 @@ void NES_N106::Tick (UINT32 clocks)
     }
 }
 
-UINT32 NES_N106::Render (INT32 b[2])
+UINT32 NES_N106::Render(INT32 b[2])
 {
     b[0] = 0;
     b[1] = 0;
@@ -173,15 +161,13 @@ UINT32 NES_N106::Render (INT32 b[2])
         // this could be made more efficient than going clock-by-clock
         // but this way is simpler
         int clocks = render_clock;
-        while (clocks > 0)
-        {
-            int c = 7-render_channel;
-            if (0 == ((mask >> c) & 1))
-            {
+        while (clocks > 0) {
+            int c = 7 - render_channel;
+            if (0 == ((mask >> c) & 1)) {
                 b[0] += fout[c] * sm[0][c];
                 b[1] += fout[c] * sm[1][c];
             }
-            
+
             ++render_subclock;
             if (render_subclock >= 15) // each channel gets a 15-cycle slice
             {
@@ -198,26 +184,22 @@ UINT32 NES_N106::Render (INT32 b[2])
         b[1] <<= 1;
 
         // average the output
-        if (render_clock > 0)
-        {
+        if (render_clock > 0) {
             b[0] /= render_clock;
             b[1] /= render_clock;
         }
         render_clock = 0;
-    }
-    else // just mix all channels
+    } else // just mix all channels
     {
-        for (int i = (8-channels); i<8; ++i)
-        {
-            if (0 == ((mask >> i) & 1))
-            {
+        for (int i = (8 - channels); i < 8; ++i) {
+            if (0 == ((mask >> i) & 1)) {
                 b[0] += fout[i] * sm[0][i];
                 b[1] += fout[i] * sm[1][i];
             }
         }
 
         // mix together, increase output level by 8 bits, roll off 7 bits from sm
-        INT32 MIX[9] = { 256/1, 256/1, 256/2, 256/3, 256/4, 256/5, 256/6, 256/6, 256/6 };
+        INT32 MIX[9] = {256 / 1, 256 / 1, 256 / 2, 256 / 3, 256 / 4, 256 / 5, 256 / 6, 256 / 6, 256 / 6};
         b[0] = (b[0] * MIX[channels]) >> 7;
         b[1] = (b[1] * MIX[channels]) >> 7;
         // when approximating the serial multiplex as a straight mix, once the
@@ -240,30 +222,27 @@ UINT32 NES_N106::Render (INT32 b[2])
     return 2;
 }
 
-bool NES_N106::Write (UINT32 adr, UINT32 val, UINT32 id)
+bool NES_N106::Write(UINT32 adr, UINT32 val, UINT32 id)
 {
     if (adr == 0xE000) // master disable
     {
         master_disable = ((val & 0x40) != 0);
         return true;
-    }
-    else if (adr == 0xF800) // register select
+    } else if (adr == 0xF800) // register select
     {
         reg_select = (val & 0x7F);
         reg_advance = (val & 0x80) != 0;
         return true;
-    }
-    else if (adr == 0x4800) // register write
+    } else if (adr == 0x4800) // register write
     {
         if (option[OPT_PHASE_READ_ONLY]) // old emulators didn't know phase was stored here
         {
-            int c = 15 - (reg_select/8);
+            int c = 15 - (reg_select / 8);
             int r = reg_select & 7;
             if (c < get_channels() &&
                 (r == 1 ||
                  r == 3 ||
-                 r == 5))
-            {
+                 r == 5)) {
                 if (reg_advance)
                     reg_select = (reg_select + 1) & 0x7F;
                 return true;
@@ -271,10 +250,9 @@ bool NES_N106::Write (UINT32 adr, UINT32 val, UINT32 id)
         }
         if (option[OPT_LIMIT_WAVELENGTH]) // old emulators ignored top 3 bits of length
         {
-            int c = 15 - (reg_select/8);
+            int c = 15 - (reg_select / 8);
             int r = reg_select & 7;
-            if (c < get_channels() && r == 4)
-            {
+            if (c < get_channels() && r == 4) {
                 val |= 0xE0;
             }
         }
@@ -286,7 +264,7 @@ bool NES_N106::Write (UINT32 adr, UINT32 val, UINT32 id)
     return false;
 }
 
-bool NES_N106::Read (UINT32 adr, UINT32 & val, UINT32 id)
+bool NES_N106::Read(UINT32 adr, UINT32& val, UINT32 id)
 {
     if (adr == 0x4800) // register read
     {
@@ -300,68 +278,62 @@ bool NES_N106::Read (UINT32 adr, UINT32 & val, UINT32 id)
 
 //
 // register decoding/encoding functions
-// 
+//
 
-inline UINT32 NES_N106::get_phase (int channel)
+inline UINT32 NES_N106::get_phase(int channel)
 {
     // 24-bit phase stored in channel regs 1/3/5
     channel = channel << 3;
-    return (reg[0x41 + channel]      )
-        +  (reg[0x43 + channel] << 8 )
-        +  (reg[0x45 + channel] << 16);
+    return (reg[0x41 + channel]) + (reg[0x43 + channel] << 8) + (reg[0x45 + channel] << 16);
 }
 
-inline UINT32 NES_N106::get_freq (int channel)
+inline UINT32 NES_N106::get_freq(int channel)
 {
     // 19-bit frequency stored in channel regs 0/2/4
     channel = channel << 3;
-    return ( reg[0x40 + channel]              )
-        +  ( reg[0x42 + channel]         << 8 )
-        +  ((reg[0x44 + channel] & 0x03) << 16);
+    return (reg[0x40 + channel]) + (reg[0x42 + channel] << 8) + ((reg[0x44 + channel] & 0x03) << 16);
 }
 
-inline UINT32 NES_N106::get_off (int channel)
+inline UINT32 NES_N106::get_off(int channel)
 {
     // 8-bit offset stored in channel reg 6
     channel = channel << 3;
     return reg[0x46 + channel];
 }
 
-inline UINT32 NES_N106::get_len (int channel)
+inline UINT32 NES_N106::get_len(int channel)
 {
     // 6-bit<<3 length stored obscurely in channel reg 4
     channel = channel << 3;
     return 256 - (reg[0x44 + channel] & 0xFC);
 }
 
-inline INT32 NES_N106::get_vol (int channel)
+inline INT32 NES_N106::get_vol(int channel)
 {
     // 4-bit volume stored in channel reg 7
     channel = channel << 3;
     return reg[0x47 + channel] & 0x0F;
 }
 
-inline INT32 NES_N106::get_sample (UINT32 index)
+inline INT32 NES_N106::get_sample(UINT32 index)
 {
     // every sample becomes 2 samples in regs
-    return (index&1) ?
-        ((reg[index>>1] >> 4) & 0x0F) :
-        ( reg[index>>1]       & 0x0F) ;
+    return (index & 1) ? ((reg[index >> 1] >> 4) & 0x0F) : (reg[index >> 1] & 0x0F);
 }
 
-inline int NES_N106::get_channels ()
+inline int NES_N106::get_channels()
 {
     // 3-bit channel count stored in reg 0x7F
     return ((reg[0x7F] >> 4) & 0x07) + 1;
 }
 
-inline void NES_N106::set_phase (UINT32 phase, int channel)
+inline void NES_N106::set_phase(UINT32 phase, int channel)
 {
     // 24-bit phase stored in channel regs 1/3/5
     channel = channel << 3;
-    reg[0x41 + channel] =  phase        & 0xFF;
-    reg[0x43 + channel] = (phase >> 8 ) & 0xFF;
+    reg[0x41 + channel] = phase & 0xFF;
+    reg[0x43 + channel] = (phase >> 8) & 0xFF;
     reg[0x45 + channel] = (phase >> 16) & 0xFF;
 }
 
-} //namespace
+} // namespace xgm
