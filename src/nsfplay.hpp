@@ -39,18 +39,15 @@ enum DeviceCode { APU = 0,
 class NSFPlayer
 {
   private:
-    double rate;
+    long rate;
     int nch; // number of channels
     int song;
-
     int last_out;
     int silent_length;
-
-    double cpu_clock_rest;
-    double apu_clock_rest;
-
+    long cpu_clock_rest;
     int time_in_ms;
     bool infinite;
+    int quality;
 
     xgm::Bus apu_bus;
     xgm::Layer stack;
@@ -131,6 +128,7 @@ class NSFPlayer
     NSFPlayer()
     {
         nsf = NULL;
+        quality = 10;
         sc[APU] = (apu = new xgm::NES_APU());
         sc[DMC] = (dmc = new xgm::NES_DMC());
         sc[FDS] = (fds = new xgm::NES_FDS());
@@ -169,14 +167,13 @@ class NSFPlayer
         rate = samplingRate;
         int region = GetRegion(nsf->regn, nsf->regn_pref);
         dmc->SetPal(region == REGION_PAL);
-        int quality = 10;
-        double clock;
+        long clock;
         switch (region) {
             case REGION_NTSC: clock = 1789773; break;
             case REGION_PAL: clock = 1662607; break;
             case REGION_DENDY: clock = 1773448; break;
         }
-        double oversample = rate * quality;
+        long oversample = rate * quality;
         if (oversample > clock) oversample = clock;
         if (oversample < rate) oversample = rate;
         for (int i = 0; i < NES_DEVICE_MAX; i++) {
@@ -213,8 +210,7 @@ class NSFPlayer
         silent_length = 0;
         total_render = 0;
         frame_render = (int)(rate) / 60;
-        apu_clock_rest = 0.0;
-        cpu_clock_rest = 0.0;
+        cpu_clock_rest = 0;
 
         int region = GetRegion(nsf->regn, nsf->regn_pref);
         switch (region) {
@@ -260,7 +256,6 @@ class NSFPlayer
         }
 
         // suppress starting click by setting DC filter to balance the starting level at 0
-        int quality = 10;
         int32_t b[2];
         for (int i = 0; i < NES_DEVICE_MAX; ++i) {
             if (i != VRC7) {
@@ -281,37 +276,16 @@ class NSFPlayer
         int outm;
         uint32_t i;
         int master_volume = 512;
-        int mult_speed = 256;
-        double apu_clock_per_sample = cpu.nes_basecycles / rate;
-        double cpu_clock_per_sample = apu_clock_per_sample * ((double)(mult_speed) / 256.0);
+        int apu_clock_per_sample = (cpu.nes_basecycles * 256) / rate;
 
         for (i = 0; i < (uint32_t)length; i++) {
             total_render++;
             // tick CPU
-            cpu_clock_rest += cpu_clock_per_sample;
-            int cpu_clocks = (int)(cpu_clock_rest);
-            // Moved to RateConverter:
-            // if (cpu_clocks > 0)
-            //{
-            //    UINT32 real_cpu_clocks = cpu.Exec ( cpu_clocks );
-            //    cpu_clock_rest -= (double)(real_cpu_clocks);
-            //
-            //    // tick APU frame sequencer
-            //    dmc->TickFrameSequence(real_cpu_clocks);
-            //    if (nsf->use_mmc5)
-            //        mmc5->TickFrameSequence(real_cpu_clocks);
-            //}
-            // UpdateInfo();
+            cpu_clock_rest += apu_clock_per_sample;
+            int cpu_clocks = (int)(cpu_clock_rest / 256);
             rconv.TickCPU(cpu_clocks);
-            cpu_clock_rest -= double(cpu_clocks);
-
-            // tick fader and queue accumulated ticks for APU/CPU to be done during Render
-            apu_clock_rest += apu_clock_per_sample;
-            int apu_clocks = (int)(apu_clock_rest);
-            if (apu_clocks > 0) {
-                fader.Tick(apu_clocks);
-                apu_clock_rest -= (double)(apu_clocks);
-            }
+            fader.Tick(cpu_clocks);
+            cpu_clock_rest -= cpu_clocks * 256;
 
             // render output
             fader.Render(buf);             // ticks APU/CPU and renders with subdivision and resampling (also does UpdateInfo)
@@ -352,7 +326,7 @@ class NSFPlayer
             stream += nch;
             UpdateInfo();
         }
-        time_in_ms += (int)(1000 * length / rate * mult_speed / 256);
+        time_in_ms += (int)(1000 * length / rate);
         return length;
     }
 
