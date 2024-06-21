@@ -17,11 +17,6 @@ static void audioCallback(void* userdata, Uint8* stream, int len)
     player->Render((int16_t*)stream, len / 2);
 }
 
-FILE* fopen_utf8(const char* path, const char* mode)
-{
-    return fopen(path, mode);
-}
-
 int main(int argc, char* argv[])
 {
     const char* path = nullptr;
@@ -51,7 +46,16 @@ int main(int argc, char* argv[])
     }
     xgm::NSF nsf;
     NSFPlayer player;
-    if (!nsf.LoadFile(path)) {
+    uint8_t nsfData[256 * 1024];
+    int nsfSize;
+    FILE* fp = fopen(path, "rb");
+    if (!fp) {
+        puts("File open error");
+        return -1;
+    }
+    nsfSize = (int)fread(nsfData, 1, sizeof(nsfData), fp);
+    fclose(fp);
+    if (!nsf.Load(nsfData, nsfSize)) {
         puts("File load error");
         return -1;
     }
