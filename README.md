@@ -18,6 +18,8 @@
 
 本リポジトリは、[VGS-Zero](https://github.com/suzukiplan/vgszero) で NSF を再生する機能を実装するためのコードベースの開発を目的としていて、VRC7 (OPLL) は音色の著作権の関係で VGS-Zero への組み込みができないと判断（リーガル的な判断）がされたため、VRC7 の実装を削除する対応を行っています。
 
+また、RaspberryPi Zero 2W のベアメタル環境で動作させることを目的として STL を使わない形に修正している影響で nsfconfig による設定の可変化を削除して、固定値の設定による nsfplay の改変モジュール ([src/nsfplay.hpp](src/nsfplay.hpp)）を用いて NSF の再生を行っています。（動作上の違いは無い...はず）
+
 ## How to Execute
 
 実行モジュールは配布していないのでビルドが必要です。
