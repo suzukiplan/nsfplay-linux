@@ -2,8 +2,6 @@
 #define _NSF_H_
 #include "../soundData.h"
 
-#define NSF_MAX_PATH 512
-
 namespace xgm
 {
 struct NSFE_Entry {
@@ -17,9 +15,6 @@ const unsigned int NSFE_ENTRIES = 256;
 const unsigned int NSFE_MIXES = 8;
 const INT16 NSFE_MIXE_DEFAULT = 32767;
 
-/**
- * NSF�t�@�C���^
- */
 class NSF : public SoundDataMSP
 {
   public:
