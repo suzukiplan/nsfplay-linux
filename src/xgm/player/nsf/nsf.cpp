@@ -8,13 +8,10 @@
 namespace xgm
 {
 
-UINT8 CONVERT_REGN[4] = {0x01, 0x02, 0x03, 0x03}; // NTSC, PAL, DUAL, DUAL
-int CONVERT_REGN_PREF[4] = {-1, -1, 0, 1};        // Any,  Any, NTSC,  PAL
+uint8_t CONVERT_REGN[4] = {0x01, 0x02, 0x03, 0x03}; // NTSC, PAL, DUAL, DUAL
+int CONVERT_REGN_PREF[4] = {-1, -1, 0, 1};          // Any,  Any, NTSC,  PAL
 
-const int NSFE_ERROR_SIZE = 256;
-static char nsfe_error_[NSFE_ERROR_SIZE];
-
-NSF::NSF() : SoundDataMSP()
+NSF::NSF()
 {
     body = NULL;
     default_playtime = 5 * 60 * 1000;
@@ -37,29 +34,6 @@ void NSF::SetDefaults(int p, int f, int l)
     default_playtime = p;
     default_fadetime = f;
     default_loopnum = l;
-}
-
-static const char* print_time(int time)
-{
-    static char buf[32];
-    int h, m, s = 0;
-
-    if (time < 0)
-        return "";
-
-    time /= 1000;
-    s = time % 60;
-    time /= 60;
-    m = time % 60;
-    time /= 60;
-    h = time;
-
-    if (h)
-        sprintf(buf, "%02d:%02d:%02d", h, m, s);
-    else
-        sprintf(buf, "%02d:%02d", m, s);
-
-    return buf;
 }
 
 void NSF::SetLength(int t)
@@ -127,7 +101,7 @@ void NSF::SetSong(int s)
     title_unknown = true;
 }
 
-bool NSF::Load(UINT8* image, UINT32 size)
+bool NSF::Load(uint8_t* image, uint32_t size)
 {
     if (size < 4) // no FourCC
     {
@@ -204,7 +178,7 @@ bool NSF::Load(UINT8* image, UINT32 size)
     memcpy(extra, image + 0x7c, 4);
 
     delete[] body;
-    body = new UINT8[size - 0x80];
+    body = new uint8_t[size - 0x80];
     memcpy(body, image + 0x80, size - 0x80);
     bodysize = size - 0x80;
 
@@ -214,7 +188,7 @@ bool NSF::Load(UINT8* image, UINT32 size)
         suffix += 0x80; // add header to suffix location
         int suffix_size = size - suffix;
         if (suffix_size < 0) suffix_size = 0; // shouldn't happen?
-        bool result = LoadNSFe(image + suffix, UINT32(suffix_size), true);
+        bool result = LoadNSFe(image + suffix, uint32_t(suffix_size), true);
         if ((nsf2_bits & 0x80) && !result) {
             return false; // NSF2 bit 7 indicates metadata parsing is mandatory
         }
@@ -224,7 +198,7 @@ bool NSF::Load(UINT8* image, UINT32 size)
     return true;
 }
 
-bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
+bool NSF::LoadNSFe(uint8_t* image, uint32_t size, bool nsf2)
 {
 // helper for parsing strings
 #define NSFE_STRING(p)                           \
@@ -238,14 +212,14 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
 
     // store entire file for string references, etc.
     delete[] nsfe_image;
-    nsfe_image = new UINT8[size + 1];
+    nsfe_image = new uint8_t[size + 1];
     ::memcpy(nsfe_image, image, size);
     nsfe_image[size] = 0; // null terminator for safety
     image = nsfe_image;
 
     bool info = false;
     bool data = false;
-    UINT32 chunk_offset = 0;
+    uint32_t chunk_offset = 0;
     if (!nsf2) {
         if (size < 4) // no FourCC
         {
@@ -277,7 +251,7 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             return false;
         }
 
-        UINT8* chunk = image + chunk_offset;
+        uint8_t* chunk = image + chunk_offset;
 
         unsigned int chunk_size =
             (chunk[0]) + (chunk[1] << 8) + (chunk[2] << 16) + (chunk[3] << 24);
@@ -350,7 +324,7 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             }
 
             delete[] body;
-            body = new UINT8[chunk_size];
+            body = new uint8_t[chunk_size];
             memcpy(body, chunk, chunk_size);
             bodysize = chunk_size;
 
@@ -390,9 +364,9 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             unsigned int i = 0;
             unsigned int n = 0;
             while (i < NSFE_ENTRIES && (n + 3) < chunk_size) {
-                UINT32 value =
+                uint32_t value =
                     (chunk[n + 0]) + (chunk[n + 1] << 8) + (chunk[n + 2] << 16) + (chunk[n + 3] << 24);
-                nsfe_entry[i].time = INT32(value);
+                nsfe_entry[i].time = int32_t(value);
                 ++i;
                 n += 4;
             }
@@ -400,9 +374,9 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             unsigned int i = 0;
             unsigned int n = 0;
             while (i < NSFE_ENTRIES && (n + 3) < chunk_size) {
-                UINT32 value =
+                uint32_t value =
                     (chunk[n + 0]) + (chunk[n + 1] << 8) + (chunk[n + 2] << 16) + (chunk[n + 3] << 24);
-                nsfe_entry[i].fade = INT32(value);
+                nsfe_entry[i].fade = int32_t(value);
                 ++i;
                 n += 4;
             }
@@ -418,7 +392,7 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             }
         } else if (!strcmp(cid, "psfx")) {
             for (unsigned int i = 0; i < chunk_size; ++i) {
-                UINT8 track = chunk[i];
+                uint8_t track = chunk[i];
                 nsfe_entry[track].psfx = true;
             }
         } else if (!strcmp(cid, "text")) {
@@ -426,7 +400,7 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             unsigned int pos = 0;
             while (pos + 3 <= chunk_size) {
                 unsigned int mixe_index = chunk[pos + 0];
-                INT16 mixe_value = UINT16(chunk[pos + 1] + (chunk[pos + 2] << 8));
+                int16_t mixe_value = uint16_t(chunk[pos + 1] + (chunk[pos + 2] << 8));
 
                 if (mixe_index >= NSFE_MIXES) {
                     return false; // invalid mixe index
