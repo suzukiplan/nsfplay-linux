@@ -58,6 +58,9 @@ make
 
 ## License
 
+- [./src/nsfplay.hpp](./src/nsfplay.hpp): [LICENSE-NSFPlay-alter.txt](./LICENSE-NSFPlay-alter.txt) (GPLv3)
+  - Copyright (c) Mamiya (mamiya@proc.org.tohoku.ac.jp)
+  - Copyright (c) 2024, Yoji Suzuki
 - [./src/cli.cpp](./src/cli.cpp): [LICENSE-cli.txt](./LICENSE-cli.txt) (GPLv3)
   - Copyright (c) 2024, Yoji Suzuki
 - Part of NEZplug: [LICENSE-NEZplug.txt](./LICENSE-NEZplug.txt) (Free Software)
