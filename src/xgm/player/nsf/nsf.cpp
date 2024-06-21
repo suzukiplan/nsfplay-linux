@@ -17,46 +17,6 @@ static char nsfe_error_[NSFE_ERROR_SIZE];
 static const char* nsfe_error = "(no NSFe loaded)";
 static const char* nsf_error = "(no NSF loaded)";
 
-void sjis_legacy(char* s, const unsigned int length)
-{
-#if defined(_MSC_VER) || defined(__MINGW32__)
-    bool utf8 = true;
-    unsigned int multibyte = 0;
-    for (unsigned int i = 0; i < length; ++i) {
-        unsigned char c = s[i];
-        if (multibyte) {
-            if ((c & 0xC0) != 0x80) // multibyte continuations always have 10xxxxxx
-            {
-                utf8 = false;
-                break;
-            }
-            --multibyte;
-        } else {
-            if ((c & 0x80) != 0x00) // high bit marks start of multibyte
-            {
-                if ((c & 0xE0) == 0xC0)
-                    multibyte = 1; // 110xxxxx
-                else if ((c & 0xF0) == 0xE0)
-                    multibyte = 2; // 1110xxxx
-                else if ((c & 0xF8) == 0xF0)
-                    multibyte = 3; // 11110xxx
-                else {
-                    utf8 = false;
-                    break;
-                }
-            }
-        }
-    }
-    if (utf8) return; // valid UTF8, don't convert
-
-    // if not valid UTF8 assume legacy shift-JIS
-    // (convenient conversion back and forth using windows wide character)
-    wchar_t w[1024];
-    MultiByteToWideChar(932, 0, s, -1, w, 1024);
-    WideCharToMultiByte(CP_UTF8, 0, w, -1, s, length, NULL, NULL);
-#endif
-}
-
 NSF::NSF() : SoundDataMSP()
 {
     body = NULL;
@@ -402,9 +362,6 @@ bool NSF::Load(UINT8* image, UINT32 size)
     title_nsf[32] = '\0';
     artist_nsf[32] = '\0';
     copyright_nsf[32] = '\0';
-    sjis_legacy(title_nsf, sizeof(title_nsf)); // these 3 fields use SJIS in some old Japanese NSFs
-    sjis_legacy(artist_nsf, sizeof(artist_nsf));
-    sjis_legacy(copyright_nsf, sizeof(copyright_nsf));
     title = title_nsf;
     artist = artist_nsf;
     copyright = copyright_nsf;
