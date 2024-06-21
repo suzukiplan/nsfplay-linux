@@ -14,26 +14,13 @@ int CONVERT_REGN_PREF[4] = {-1, -1, 0, 1};        // Any,  Any, NTSC,  PAL
 const int NSFE_ERROR_SIZE = 256;
 static char nsfe_error_[NSFE_ERROR_SIZE];
 
-static const char* nsfe_error = "(no NSFe loaded)";
-static const char* nsf_error = "(no NSF loaded)";
-
 NSF::NSF() : SoundDataMSP()
 {
     body = NULL;
     default_playtime = 5 * 60 * 1000;
     default_fadetime = 5 * 1000;
     default_loopnum = 0;
-
-    title_nsf[0] = 0;
-    artist_nsf[0] = 0;
-    copyright_nsf[0] = 0;
-    title = title_nsf;
-    artist = artist_nsf;
-    copyright = copyright_nsf;
-    ripper = "";
     nsfe_image = NULL;
-    nsfe_plst = NULL;
-    nsfe_plst_size = 0;
     for (unsigned int i = 0; i < NSFE_MIXES; ++i) {
         nsfe_mixe[i] = NSFE_MIXE_DEFAULT;
     }
@@ -75,161 +62,6 @@ static const char* print_time(int time)
     return buf;
 }
 
-const char* NSF::GetPlaylistString(const char* format, bool b)
-{
-    static char buf[NSF_MAX_PATH + 128];
-    char* p = buf;
-
-    const char* t = GetTitleString(format);
-
-    p += sprintf(p, "%s::NSF,$%02x,", filename, song + 1);
-
-    while (*t != '\0') {
-        if (*t == '\\' || *t == ',')
-            *(p++) = '\\';
-        *(p++) = *(t++);
-    }
-
-    if (b) {
-        if (time_in_ms >= 0)
-            p += sprintf(p, ",%s", print_time(time_in_ms));
-        else
-            p += sprintf(p, ",");
-
-        if (loop_in_ms >= 0)
-            p += sprintf(p, ",%s", print_time(loop_in_ms));
-        else
-            p += sprintf(p, ",");
-
-        if (fade_in_ms >= 0)
-            p += sprintf(p, ",%s", print_time(fade_in_ms));
-    }
-
-    (*p) = '\0';
-    return buf;
-}
-
-const char* NSF::GetTitleString(const char* format, int song)
-{
-    int wp = 0;
-
-    char fpath[sizeof(this->filename)];
-    memcpy(fpath, this->filename, sizeof(this->filename));
-    char* fname = strrchr(fpath, '\\');
-    if (fname != NULL)
-        *(fname++) = '\0';
-    else
-        fname = fpath;
-
-    if (song < 0) song = this->song;
-    UINT8 nsfe_ei = nsfe_plst ? nsfe_plst[song] : song;
-
-    if (!title_unknown) {
-        return print_title;
-    }
-
-    if (format == NULL || strlen(format) > 128)
-        format = "%L (%n/%e) %T - %A";
-
-    print_title[wp] = '\0';
-
-    while (wp < 256 && *format) {
-        if (*format == '%') {
-            switch (*(++format)) {
-                case 'F':
-                case 'f':
-                    wp += sprintf(print_title + wp, "%s", fname);
-                    format++;
-                    break;
-                case 'P':
-                case 'p':
-                    wp += sprintf(print_title + wp, "%s", fpath);
-                    format++;
-                    break;
-                case 'T':
-                case 't':
-                    wp += sprintf(print_title + wp, "%s", this->title);
-                    format++;
-                    break;
-                case 'A':
-                case 'a':
-                    if (nsfe_entry[nsfe_ei].taut[0] != 0)
-                        wp += sprintf(print_title + wp, "%s", nsfe_entry[nsfe_ei].taut);
-                    else
-                        wp += sprintf(print_title + wp, "%s", this->artist);
-                    format++;
-                    break;
-                case 'C':
-                case 'c':
-                    wp += sprintf(print_title + wp, "%s", this->copyright);
-                    format++;
-                    break;
-                case 'L':
-                case 'l':
-                    wp += sprintf(print_title + wp, "%s", nsfe_entry[nsfe_ei].tlbl);
-                    format++;
-                    break;
-                case 'N':
-                    wp += sprintf(print_title + wp, "$%02x", song + 1);
-                    format++;
-                    break;
-                case 'n':
-                    wp += sprintf(print_title + wp, "%03d", song + 1);
-                    format++;
-                    break;
-                case 'S':
-                    wp += sprintf(print_title + wp, "$%02x", this->start);
-                    format++;
-                    break;
-                case 's':
-                    wp += sprintf(print_title + wp, "%03d", this->start);
-                    format++;
-                    break;
-                case 'E':
-                    wp += sprintf(print_title + wp, "$%02x", this->songs);
-                    format++;
-                    break;
-                case 'e':
-                    wp += sprintf(print_title + wp, "%03d", this->songs);
-                    format++;
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            print_title[wp++] = *format++;
-        }
-    }
-
-    print_title[wp] = '\0';
-
-    // strip trailing whitespace
-    for (--wp; wp >= 0 && print_title[wp] == ' '; --wp) {
-        print_title[wp] = '\0';
-    }
-
-    // strip leading whitespace
-    for (wp = 0; print_title[wp] == ' '; ++wp) {}
-    if (wp > 0) {
-        int i = 0;
-        do {
-            print_title[i] = print_title[i + wp];
-            if (print_title[i] == '\0')
-                break;
-            ++i;
-        } while (true);
-    }
-
-    title_unknown = false;
-    return print_title;
-}
-
-void NSF::SetTitleString(char* str)
-{
-    strncpy(print_title, str, 255);
-    print_title[255] = '\0';
-}
-
 void NSF::SetLength(int t)
 {
     time_in_ms = t;
@@ -238,10 +70,8 @@ void NSF::SetLength(int t)
 
 int NSF::GetPlayTime()
 {
-    int s = song;
-    if (nsfe_plst) s = nsfe_plst[song];
-    if (nsfe_entry[s].time >= 0) {
-        return nsfe_entry[s].time;
+    if (nsfe_entry[song].time >= 0) {
+        return nsfe_entry[song].time;
     }
 
     return time_in_ms < 0 ? default_playtime : time_in_ms;
@@ -254,10 +84,8 @@ int NSF::GetLoopTime()
 
 int NSF::GetFadeTime()
 {
-    int s = song;
-    if (nsfe_plst) s = nsfe_plst[song];
-    if (nsfe_entry[s].fade >= 0) {
-        return nsfe_entry[s].fade;
+    if (nsfe_entry[song].fade >= 0) {
+        return nsfe_entry[song].fade;
     }
 
     if (fade_in_ms < 0)
@@ -290,8 +118,7 @@ int NSF::GetSongNum()
 
 bool NSF::UseNSFePlaytime()
 {
-    if (!nsfe_plst) return false;
-    return nsfe_entry[nsfe_plst[song]].time >= 0;
+    return false;
 }
 
 void NSF::SetSong(int s)
@@ -302,24 +129,14 @@ void NSF::SetSong(int s)
 
 bool NSF::Load(UINT8* image, UINT32 size)
 {
-    nsf_error = "";
-    nsfe_error = "";
-
     if (size < 4) // no FourCC
     {
-        nsf_error = "File too small for FourCC ID.";
         return false;
     }
 
     nsf2_bits = 0;
     vrc7_type = -1;      // default
     vrc7_patches = NULL; // none
-
-    // fill NSFe values with defaults
-
-    // 'plst'
-    nsfe_plst = NULL;
-    nsfe_plst_size = 0;
 
     // entries 'tlbl', 'taut', 'time', 'fade', 'psfx'
     for (unsigned int i = 0; i < NSFE_ENTRIES; ++i) {
@@ -340,13 +157,11 @@ bool NSF::Load(UINT8* image, UINT32 size)
 
     if (strcmp("NESM", magic)) {
         bool result = LoadNSFe(image, size, false);
-        nsf_error = nsfe_error;
         return result;
     }
 
     if (size < 0x80) // no header?
     {
-        nsf_error = "File too small for NSF header.";
         return false;
     }
 
@@ -356,18 +171,6 @@ bool NSF::Load(UINT8* image, UINT32 size)
     load_address = image[0x08] | (image[0x09] << 8);
     init_address = image[0x0a] | (image[0x0B] << 8);
     play_address = image[0x0c] | (image[0x0D] << 8);
-    memcpy(title_nsf, image + 0x0e, 32);
-    memcpy(artist_nsf, image + 0x2e, 32);
-    memcpy(copyright_nsf, image + 0x4e, 32);
-    title_nsf[32] = '\0';
-    artist_nsf[32] = '\0';
-    copyright_nsf[32] = '\0';
-    title = title_nsf;
-    artist = artist_nsf;
-    copyright = copyright_nsf;
-    ripper = "";  // NSFe only
-    text = NULL;  // NSFe only
-    text_len = 0; // NSFe only
     speed_ntsc = image[0x6e] | (image[0x6f] << 8);
     memcpy(bankswitch, image + 0x70, 8);
     speed_pal = image[0x78] | (image[0x79] << 8);
@@ -396,7 +199,6 @@ bool NSF::Load(UINT8* image, UINT32 size)
     use_fme7 = soundchip & 32 ? true : false;
 
     if (use_vrc7) {
-        nsf_error = "VRC7 is not supported";
         return false;
     }
     memcpy(extra, image + 0x7c, 4);
@@ -414,13 +216,11 @@ bool NSF::Load(UINT8* image, UINT32 size)
         if (suffix_size < 0) suffix_size = 0; // shouldn't happen?
         bool result = LoadNSFe(image + suffix, UINT32(suffix_size), true);
         if ((nsf2_bits & 0x80) && !result) {
-            nsf_error = nsfe_error;
             return false; // NSF2 bit 7 indicates metadata parsing is mandatory
         }
         bodysize = suffix - 0x80;
     }
 
-    nsf_error = "";
     return true;
 }
 
@@ -449,7 +249,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
     if (!nsf2) {
         if (size < 4) // no FourCC
         {
-            nsfe_error = "File too small for FourCC ID.";
             return false;
         }
 
@@ -457,8 +256,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
         magic[4] = '\0';
 
         if (strcmp("NSFE", magic)) {
-            // note anything that's not NESM (NSF) ends up here, not just NSFE
-            nsfe_error = "Unknown FourCC ID at start of file.";
             return false;
         }
         chunk_offset = 4; // skip 'NSFE'
@@ -477,7 +274,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
 
         if ((size - chunk_offset) < 8) // not enough data for chunk size + FourCC
         {
-            nsfe_error = "Incomplete chunk header at end of file? Less than 8 bytes remain.";
             return false;
         }
 
@@ -488,7 +284,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
 
         if ((size - chunk_offset) < (chunk_size + 8)) // not enough data for chunk
         {
-            nsfe_error = "Incomplete NSFe chunk at end of file? Not enough data.";
             return false;
         }
 
@@ -506,12 +301,10 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
 
         if (!strcmp(cid, "INFO")) {
             if (info == true) {
-                nsfe_error = "Duplicate 'INFO' chunk.";
                 return false;
             }
 
             if (chunk_size < 0x0A) {
-                nsfe_error = "'INFO' chunk too small.";
                 return false;
             }
 
@@ -546,26 +339,13 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
             body = NULL;
             bodysize = 0;
 
-            // description strings should follow in 'auth' chunk
-            title_nsf[0] = 0;
-            artist_nsf[0] = 0;
-            copyright_nsf[0] = 0;
-            title = title_nsf;
-            artist = artist_nsf;
-            copyright = copyright_nsf;
-            ripper = "";
-            text = NULL;
-            text_len = 0; // NSFe only
-
             // INFO chunk read
             info = true;
         } else if (!strcmp(cid, "DATA")) {
             if (!info) {
-                nsfe_error = "'DATA' chunk appears before 'INFO' chunk.";
                 return false;
             }
             if (data) {
-                nsfe_error = "Duplicate 'DATA' chunk found.";
                 return false;
             }
 
@@ -588,38 +368,24 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
         } else if (!strcmp(cid, "NSF2")) {
             version = 2;
             if (chunk_size < 1) {
-                nsfe_error = "'NSF2' chunk size too small.";
                 return false;
             }
             nsf2_bits = chunk[0];
         } else if (!strcmp(cid, "VRC7")) {
             if (chunk_size < 1) {
-                nsfe_error = "'VRC7' chunk size too small.";
                 return false;
             } else if (chunk_size > 1 && chunk_size < (1 + 16 * 8)) {
-                nsfe_error = "'VRC7' chunk patch set incomplete.";
                 return false;
             }
             vrc7_type = chunk[0];
             if (vrc7_type > 1) {
-                nsfe_error = "'VRC7' variant unknown.";
                 return false;
             }
             if (chunk_size >= (1 + 16 * 8)) {
                 vrc7_patches = chunk + 1;
             }
         } else if (!strcmp(cid, "auth")) {
-            unsigned int n = 0;
-            while (true) {
-                NSFE_STRING(title);
-                NSFE_STRING(artist);
-                NSFE_STRING(copyright);
-                NSFE_STRING(ripper);
-                break;
-            }
         } else if (!strcmp(cid, "plst")) {
-            nsfe_plst = chunk;
-            nsfe_plst_size = chunk_size;
         } else if (!strcmp(cid, "time")) {
             unsigned int i = 0;
             unsigned int n = 0;
@@ -656,8 +422,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
                 nsfe_entry[track].psfx = true;
             }
         } else if (!strcmp(cid, "text")) {
-            text = reinterpret_cast<char*>(chunk);
-            text_len = chunk_size;
         } else if (!strcmp(cid, "mixe")) {
             unsigned int pos = 0;
             while (pos + 3 <= chunk_size) {
@@ -665,7 +429,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
                 INT16 mixe_value = UINT16(chunk[pos + 1] + (chunk[pos + 2] << 8));
 
                 if (mixe_index >= NSFE_MIXES) {
-                    nsfe_error = "'MIXE' device index out of range.";
                     return false; // invalid mixe index
                 }
 
@@ -682,9 +445,6 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
         } else // unknown chunk
         {
             if (cid[0] >= 'A' && cid[0] <= 'Z') {
-                snprintf(nsfe_error_, NSFE_ERROR_SIZE, "Unknown mandatory NSFe chunk: '%s'", cid);
-                nsfe_error_[NSFE_ERROR_SIZE - 1] = 0;
-                nsfe_error = nsfe_error_;
                 return false;
             }
         }
@@ -693,64 +453,7 @@ bool NSF::LoadNSFe(UINT8* image, UINT32 size, bool nsf2)
         chunk_offset += chunk_size;
     }
 
-    nsfe_error = "";
     return true;
-}
-
-const char* NSF::LoadError()
-{
-    return nsf_error;
-}
-
-void NSF::DebugOut()
-{
-    int i;
-
-    DEBUG_OUT("Magic:    %4s\n", magic);
-    DEBUG_OUT("Version:  %d\n", version);
-    DEBUG_OUT("Songs:    %d\n", songs);
-    DEBUG_OUT("Load:     %04x\n", load_address);
-    DEBUG_OUT("Init:     %04x\n", init_address);
-    DEBUG_OUT("Play:     %04x\n", play_address);
-    DEBUG_OUT("Title:    %s\n", title);
-    DEBUG_OUT("Artist:   %s\n", artist);
-    DEBUG_OUT("Copyright:%s\n", copyright);
-    DEBUG_OUT("Speed(N): %d\n", speed_ntsc);
-    DEBUG_OUT("Speed(P): %d\n", speed_pal);
-    DEBUG_OUT("Speed(D): %d\n", speed_dendy);
-
-    DEBUG_OUT("Bank :");
-    for (i = 0; i < 8; i++) {
-        DEBUG_OUT("[%02x]", bankswitch[i]);
-    }
-    DEBUG_OUT("\n");
-
-    if (regn & 1) DEBUG_OUT("PAL\n");
-    if (regn & 2) DEBUG_OUT("NTSC\n");
-    if (regn & 4) DEBUG_OUT("Dendy\n");
-    if (regn == 0) DEBUG_OUT("No region?\n");
-
-    if (soundchip & 1)
-        DEBUG_OUT("VRC6 ");
-    if (soundchip & 2)
-        DEBUG_OUT("VRC7 ");
-    if (soundchip & 4)
-        DEBUG_OUT("FDS ");
-    if (soundchip & 8)
-        DEBUG_OUT("MMC5 ");
-    if (soundchip & 16)
-        DEBUG_OUT("Namco 106 ");
-    if (soundchip & 32)
-        DEBUG_OUT("FME-07 ");
-
-    DEBUG_OUT("\n");
-
-    DEBUG_OUT("Extra:     ");
-    for (i = 0; i < 4; i++) {
-        DEBUG_OUT("[%02x]", extra[i]);
-    }
-    DEBUG_OUT("\n");
-    DEBUG_OUT("DataSize: %d\n", bodysize);
 }
 
 } // namespace xgm

@@ -59,10 +59,6 @@ int main(int argc, char* argv[])
         puts("File load error");
         return -1;
     }
-    printf("Title: %s\n", nsf.title);
-    printf("Artist: %s\n", nsf.artist);
-    printf("Copyright: %s\n", nsf.copyright);
-    printf("Ripper: %s\n", nsf.ripper);
     player.Load(&nsf);
     player.SetPlayFreq(SAMPLING_RATE);
     player.SetChannels(SAMPLING_CH);

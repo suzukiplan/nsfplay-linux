@@ -159,7 +159,6 @@ class NSFPlayer
         if (!nsf) {
             return false;
         }
-        nsf->nsfe_plst = nullptr;
         this->nsf = nsf;
         Reload();
         return true;
@@ -235,10 +234,6 @@ class NSFPlayer
         speed = 1000000.0 / nsfspeed;
 
         int song = nsf->song;
-        if (nsf->nsfe_plst) {
-            song = nsf->nsfe_plst[song];
-        }
-
         int region_register = (region == REGION_PAL) ? 1 : 0;
         if (region == REGION_DENDY && (nsf->regn & 4)) region_register = 2; // use 2 for Dendy iff explicitly supported, otherwise 0
 
