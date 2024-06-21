@@ -17,7 +17,6 @@
 #include "xgm/devices/Sound/nes_mmc5.h"
 #include "xgm/devices/Sound/nes_n106.h"
 #include "xgm/devices/Sound/nes_fds.h"
-#include "xgm/devices/Audio/filter.h"
 #include "xgm/devices/Audio/mixer.h"
 #include "xgm/devices/Audio/fader.h"
 #include "xgm/devices/Audio/amplifier.h"
@@ -70,8 +69,6 @@ class NSFPlayer
     xgm::ISoundChip* sc[NES_DEVICE_MAX]; // �T�E���h�`�b�v�̃C���X�^���X
     xgm::Amplifier amp[NES_DEVICE_MAX];  // �A���v
     xgm::RateConverter rconv;            //
-    xgm::DCFilter dcf;                   // �ŏI�o�͒i�Ɋ|���钼���t�B���^
-    xgm::Filter lpf;                     // �ŏI�o�͂Ɋ|���郍�[�p�X�t�B���^
     xgm::ILoopDetector* ld;              // ���[�v���o��
 
     // �g���b�N�ԍ��̗�
@@ -200,10 +197,6 @@ class NSFPlayer
         mixer.Reset();
         rconv.Reset();
         fader.Reset();
-        lpf.SetRate(rate);
-        lpf.Reset();
-        dcf.SetRate(rate);
-        dcf.Reset();
     }
 
     void SetChannels(int channels)
@@ -290,8 +283,6 @@ class NSFPlayer
             // warm up rconv/render with enough sample to reach a steady state
             fader.Render(b);
         }
-        // DC filter will use the current DC level as its starting state
-        dcf.SetLevel(b);
     }
 
     uint32_t Render(int16_t* stream, int length)
@@ -342,10 +333,6 @@ class NSFPlayer
                 silent_length = 0;
             }
             last_out = outm;
-
-            // echo.FastRender(buf);
-            dcf.FastRender(buf);
-            lpf.FastRender(buf);
 
             out[0] = buf[0];
             out[1] = buf[1];
