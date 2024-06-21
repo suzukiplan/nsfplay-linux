@@ -22,7 +22,6 @@
 #include "xgm/devices/Audio/amplifier.h"
 #include "xgm/devices/Audio/rconv.h"
 #include "xgm/devices/Misc/nsf2_irq.h"
-#include "xgm/devices/Misc/nes_detect.h"
 #include <stdint.h>
 
 enum DeviceCode { APU = 0,
@@ -50,9 +49,8 @@ class NSFPlayer
     double cpu_clock_rest;
     double apu_clock_rest;
 
-    int time_in_ms;         // ���t��������(ms)
-    bool playtime_detected; // ���t���Ԃ����o���ꂽ��true
-    bool infinite;          // never fade out
+    int time_in_ms;
+    bool infinite;
 
     xgm::Bus apu_bus;
     xgm::Layer stack;
@@ -66,12 +64,10 @@ class NSFPlayer
     xgm::NSF2_Vectors nsf2_vectors;
     xgm::NSF2_IRQ nsf2_irq;
 
-    xgm::ISoundChip* sc[NES_DEVICE_MAX]; // �T�E���h�`�b�v�̃C���X�^���X
-    xgm::Amplifier amp[NES_DEVICE_MAX];  // �A���v
-    xgm::RateConverter rconv;            //
-    xgm::ILoopDetector* ld;              // ���[�v���o��
+    xgm::ISoundChip* sc[NES_DEVICE_MAX];
+    xgm::Amplifier amp[NES_DEVICE_MAX];
+    xgm::RateConverter rconv;
 
-    // �g���b�N�ԍ��̗�
     enum {
         APU1_TRK0 = 0,
         APU1_TRK1,
@@ -142,7 +138,6 @@ class NSFPlayer
         sc[MMC5] = (mmc5 = new xgm::NES_MMC5());
         sc[N106] = (n106 = new xgm::NES_N106());
         sc[VRC6] = (vrc6 = new xgm::NES_VRC6());
-        ld = nullptr;
         nsf2_irq.SetCPU(&cpu);
         dmc->SetAPU(apu);
         dmc->SetCPU(&cpu);
@@ -217,7 +212,6 @@ class NSFPlayer
     {
         time_in_ms = 0;
         silent_length = 0;
-        playtime_detected = false;
         total_render = 0;
         frame_render = (int)(rate) / 60;
         apu_clock_rest = 0.0;
@@ -364,9 +358,6 @@ class NSFPlayer
             UpdateInfo();
         }
         time_in_ms += (int)(1000 * length / rate * mult_speed / 256);
-        CheckTerminal();
-        DetectLoop();
-        DetectSilent();
         return length;
     }
 
@@ -392,16 +383,6 @@ class NSFPlayer
         layer.DetachAll();
         mixer.DetachAll();
         apu_bus.DetachAll();
-
-        // select the loop detector
-        if (ld) {
-            delete ld;
-        }
-        ld = new xgm::NESDetector();
-
-        // loop detector ends up at the front of the stack
-        // (will capture all writes, but does not capture write)
-        stack.Attach(ld);
 
         // setup player program at PLAYER_RESERVED ($4100)
         const uint8_t PLAYER_PROGRAM[] =
@@ -515,16 +496,6 @@ class NSFPlayer
 
         cpu.SetMemory(&stack);
         cpu.SetNESMemory(&mem);
-    }
-
-    void DetectLoop()
-    {
-    }
-    void DetectSilent()
-    {
-    }
-    void CheckTerminal()
-    {
     }
 
     void UpdateInfinite()
