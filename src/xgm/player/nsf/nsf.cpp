@@ -1,9 +1,3 @@
-#if defined(_MSC_VER) || defined(__MINGW32__)
-#include <windows.h>
-#else
-#define stricmp strcasecmp
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
