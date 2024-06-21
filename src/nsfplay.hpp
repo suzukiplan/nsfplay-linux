@@ -224,10 +224,8 @@ class NSFPlayer
         stack.Reset();
         cpu.Reset();
 
-        double speed;
         uint16_t nsfspeed = (region == REGION_DENDY) ? nsf->speed_dendy : (region == REGION_PAL) ? nsf->speed_pal
                                                                                                  : nsf->speed_ntsc;
-        speed = 1000000.0 / nsfspeed;
 
         int song = nsf->song;
         int region_register = (region == REGION_PAL) ? 1 : 0;
@@ -236,7 +234,7 @@ class NSFPlayer
         cpu.Start(
             nsf->init_address,
             nsf->play_address,
-            speed,
+            1000000 / nsfspeed,
             song,
             region_register,
             nsf->nsf2_bits,
