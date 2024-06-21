@@ -23,7 +23,6 @@
 #include "xgm/devices/Audio/amplifier.h"
 #include "xgm/devices/Audio/rconv.h"
 #include "xgm/devices/Audio/echo.h"
-#include "xgm/devices/Audio/MedianFilter.h"
 #include "xgm/devices/Misc/nsf2_irq.h"
 #include "xgm/devices/Misc/nes_detect.h"
 #include <stdint.h>

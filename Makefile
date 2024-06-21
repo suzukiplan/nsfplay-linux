@@ -11,7 +11,6 @@ OBJECTS += ppls.o
 OBJECTS += sstream.o
 OBJECTS += echo.o
 OBJECTS += filter.o
-OBJECTS += MedianFilter.o
 OBJECTS += rconv.o
 OBJECTS += nes_cpu.o
 OBJECTS += nes_bank.o
@@ -53,9 +52,6 @@ echo.o: ./src/xgm/devices/Audio/echo.cpp
 	${CPP} -c $<
 
 filter.o: ./src/xgm/devices/Audio/filter.cpp
-	${CPP} -c $<
-
-MedianFilter.o: ./src/xgm/devices/Audio/MedianFilter.cpp
 	${CPP} -c $<
 
 rconv.o: ./src/xgm/devices/Audio/rconv.cpp
