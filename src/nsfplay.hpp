@@ -11,7 +11,6 @@
 #include "xgm/devices/Memory/nes_mem.h"
 #include "xgm/devices/Memory/nsf2_vectors.h"
 #include "xgm/devices/Sound/nes_apu.h"
-#include "xgm/devices/Sound/nes_fme7.h"
 #include "xgm/devices/Sound/nes_vrc6.h"
 #include "xgm/devices/Sound/nes_dmc.h"
 #include "xgm/devices/Sound/nes_mmc5.h"
@@ -111,7 +110,6 @@ class NSFPlayer
     xgm::NES_APU* apu;
     xgm::NES_DMC* dmc;
     xgm::NES_VRC6* vrc6;
-    xgm::NES_FME7* fme7;
     xgm::NES_MMC5* mmc5;
     xgm::NES_N106* n106;
     xgm::NES_FDS* fds;
@@ -131,7 +129,6 @@ class NSFPlayer
         sc[APU] = (apu = new xgm::NES_APU());
         sc[DMC] = (dmc = new xgm::NES_DMC());
         sc[FDS] = (fds = new xgm::NES_FDS());
-        sc[FME7] = (fme7 = new xgm::NES_FME7());
         sc[MMC5] = (mmc5 = new xgm::NES_MMC5());
         sc[N106] = (n106 = new xgm::NES_N106());
         sc[VRC6] = (vrc6 = new xgm::NES_VRC6());
@@ -140,7 +137,7 @@ class NSFPlayer
         dmc->SetCPU(&cpu);
         mmc5->SetCPU(&cpu);
         for (int i = 0; i < NES_DEVICE_MAX; i++) {
-            if (i != VRC7) {
+            if (i != VRC7 && i != FME7) {
                 amp[i].Attach(sc[i]);
             }
         }
@@ -176,7 +173,7 @@ class NSFPlayer
         if (oversample > clock) oversample = clock;
         if (oversample < rate) oversample = rate;
         for (int i = 0; i < NES_DEVICE_MAX; i++) {
-            if (i != VRC7) {
+            if (i != VRC7 && i != FME7) {
                 sc[i]->SetClock(clock);
                 sc[i]->SetRate(oversample);
             }
@@ -244,14 +241,13 @@ class NSFPlayer
         dmc->SetMask(0);
         fds->SetMask(0);
         mmc5->SetMask(0);
-        fme7->SetMask(0);
         vrc6->SetMask(0);
         n106->SetMask(0);
 
         // suppress starting click by setting DC filter to balance the starting level at 0
         int32_t b[2];
         for (int i = 0; i < NES_DEVICE_MAX; ++i) {
-            if (i != VRC7) {
+            if (i != VRC7 && i != FME7) {
                 sc[i]->Tick(0); // determine starting state for all sound units
             }
         }
@@ -411,10 +407,6 @@ class NSFPlayer
             stack.Attach(sc[VRC6]);
             mixer.Attach(&amp[VRC6]);
         }
-        if (nsf->use_fme7) {
-            stack.Attach(sc[FME7]);
-            mixer.Attach(&amp[FME7]);
-        }
         if (nsf->use_n106) {
             stack.Attach(sc[N106]);
             mixer.Attach(&amp[N106]);
@@ -424,7 +416,6 @@ class NSFPlayer
                 nsf->use_mmc5 ||
                 nsf->use_vrc6 ||
                 nsf->use_vrc7 ||
-                nsf->use_fme7 ||
                 nsf->use_n106;
             stack.Attach(sc[FDS]); // last before memory layer
             mixer.Attach(&amp[FDS]);

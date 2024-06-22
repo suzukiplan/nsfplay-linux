@@ -16,7 +16,6 @@ OBJECTS += nsf2_irq.o
 OBJECTS += nes_apu.o
 OBJECTS += nes_dmc.o
 OBJECTS += nes_fds.o
-OBJECTS += nes_fme7.o
 OBJECTS += nes_mmc5.o
 OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
@@ -83,9 +82,6 @@ nes_dmc.o: ./src/xgm/devices/Sound/nes_dmc.cpp
 	${CPP} -c $<
 
 nes_fds.o: ./src/xgm/devices/Sound/nes_fds.cpp
-	${CPP} -c $<
-
-nes_fme7.o: ./src/xgm/devices/Sound/nes_fme7.cpp
 	${CPP} -c $<
 
 nes_mmc5.o: ./src/xgm/devices/Sound/nes_mmc5.cpp
