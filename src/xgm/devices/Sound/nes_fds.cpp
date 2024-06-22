@@ -49,12 +49,12 @@ ITrackInfo* NES_FDS::GetTrackInfo(int trk)
     return &trkinfo;
 }
 
-void NES_FDS::SetClock(double c)
+void NES_FDS::SetClock(long c)
 {
     clock = c;
 }
 
-void NES_FDS::SetRate(double r)
+void NES_FDS::SetRate(long r)
 {
     rate = r;
 

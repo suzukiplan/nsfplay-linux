@@ -20,17 +20,18 @@ NES_FME7::~NES_FME7()
         PSG_delete(psg);
 }
 
-void NES_FME7::SetClock(double c)
+void NES_FME7::SetClock(long c)
 {
-    this->clock = c * 2.0;
+    this->clock = c * 2;
 }
 
-void NES_FME7::SetRate(double r)
+void NES_FME7::SetRate(long r)
 {
     // rate = r ? r : DEFAULT_RATE;
     rate = DEFAULT_CLOCK / double(DIVIDER); // TODO rewrite PSG to integrate with clock
-    if (psg)
+    if (psg) {
         PSG_set_rate(psg, (e_uint32)rate);
+    }
 }
 
 void NES_FME7::SetOption(int id, int val)

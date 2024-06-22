@@ -48,7 +48,7 @@ class NES_DMC : public ISoundChip
     bool dmc_pop;
     INT32 dmc_pop_offset;
     INT32 dmc_pop_follow;
-    double clock;
+    long clock;
     UINT32 rate;
     int pal;
     int mode;
@@ -113,8 +113,8 @@ class NES_DMC : public ISoundChip
     virtual UINT32 Render(INT32 b[2]);
     virtual bool Write(UINT32 adr, UINT32 val, UINT32 id = 0);
     virtual bool Read(UINT32 adr, UINT32& val, UINT32 id = 0);
-    virtual void SetRate(double rate);
-    virtual void SetClock(double rate);
+    virtual void SetRate(long rate);
+    virtual void SetClock(long clock);
     virtual void SetOption(int, int);
     virtual void SetMask(int m) { mask = m; }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);

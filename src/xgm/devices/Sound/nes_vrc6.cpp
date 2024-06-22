@@ -51,12 +51,12 @@ ITrackInfo* NES_VRC6::GetTrackInfo(int trk)
         return NULL;
 }
 
-void NES_VRC6::SetClock(double c)
+void NES_VRC6::SetClock(long c)
 {
     clock = c;
 }
 
-void NES_VRC6::SetRate(double r)
+void NES_VRC6::SetRate(long r)
 {
     rate = r ? r : DEFAULT_RATE;
 }

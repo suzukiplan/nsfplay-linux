@@ -43,7 +43,7 @@ class NES_MMC5 : public ISoundChip
 
     int frame_sequence_count;
 
-    double clock, rate;
+    long clock, rate;
     INT32 calc_sqr(int i, UINT32 clocks);
     INT32 square_table[32];
     INT32 pcm_table[256];
@@ -62,8 +62,8 @@ class NES_MMC5 : public ISoundChip
     virtual bool Write(UINT32 adr, UINT32 val, UINT32 id = 0);
     virtual bool Read(UINT32 adr, UINT32& val, UINT32 id = 0);
     virtual void SetOption(int id, int b);
-    virtual void SetClock(double);
-    virtual void SetRate(double);
+    virtual void SetClock(long);
+    virtual void SetRate(long);
     virtual void SetMask(int m) { mask = m; }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
     virtual ITrackInfo* GetTrackInfo(int trk);

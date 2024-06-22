@@ -643,12 +643,12 @@ UINT32 NES_DMC::Render(INT32 b[2])
     return 2;
 }
 
-void NES_DMC::SetClock(double c)
+void NES_DMC::SetClock(long c)
 {
     clock = c;
 }
 
-void NES_DMC::SetRate(double r)
+void NES_DMC::SetRate(long r)
 {
     rate = (UINT32)(r ? r : DEFAULT_RATE);
 }

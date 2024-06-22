@@ -219,12 +219,12 @@ void NES_APU::SetOption(int id, int val)
     if (id < OPT_END) option[id] = val;
 }
 
-void NES_APU::SetClock(double c)
+void NES_APU::SetClock(long c)
 {
     clock = c;
 }
 
-void NES_APU::SetRate(double r)
+void NES_APU::SetRate(long r)
 {
     rate = r ? r : DEFAULT_RATE;
 }
@@ -241,7 +241,7 @@ ITrackInfo* NES_APU::GetTrackInfo(int trk)
 {
     trkinfo[trk]._freq = freq[trk];
     if (freq[trk])
-        trkinfo[trk].freq = clock / 16 / (freq[trk] + 1);
+        trkinfo[trk].freq = double(clock) / 16 / (freq[trk] + 1);
     else
         trkinfo[trk].freq = 0;
 

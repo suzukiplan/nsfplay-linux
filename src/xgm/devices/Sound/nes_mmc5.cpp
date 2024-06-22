@@ -82,12 +82,12 @@ void NES_MMC5::SetOption(int id, int val)
     if (id < OPT_END) option[id] = val;
 }
 
-void NES_MMC5::SetClock(double c)
+void NES_MMC5::SetClock(long c)
 {
     this->clock = c;
 }
 
-void NES_MMC5::SetRate(double r)
+void NES_MMC5::SetRate(long r)
 {
     rate = r ? r : DEFAULT_RATE;
 }

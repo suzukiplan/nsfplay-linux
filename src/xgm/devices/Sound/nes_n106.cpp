@@ -64,12 +64,12 @@ ITrackInfo* NES_N106::GetTrackInfo(int trk)
     return t;
 }
 
-void NES_N106::SetClock(double c)
+void NES_N106::SetClock(long c)
 {
     clock = c;
 }
 
-void NES_N106::SetRate(double r)
+void NES_N106::SetRate(long r)
 {
     rate = r;
 }
