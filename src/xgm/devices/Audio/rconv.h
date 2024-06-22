@@ -19,7 +19,7 @@ class RateConverter : public IRenderable
 {
   protected:
     IRenderable* target;
-    double clock, rate;
+    long clock, rate;
     int mult;
     INT32 tap[2][128];
     double hr[128]; // H(z)
@@ -39,8 +39,8 @@ class RateConverter : public IRenderable
     virtual ~RateConverter();
     void Attach(IRenderable* t);
     void Reset();
-    void SetClock(double clock);
-    void SetRate(double rate);
+    void SetClock(long clock);
+    void SetRate(long rate);
     virtual void Tick(UINT32 clocks_); // ticks get executed during Render
     virtual UINT32 Render(INT32 b[2]);
     virtual void Skip(); // Does ticks in lieu of Render
