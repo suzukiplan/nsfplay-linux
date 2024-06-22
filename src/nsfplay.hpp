@@ -100,11 +100,10 @@ class NSFPlayer
         NES_TRACK_MAX
     };
 
-    int total_render; // ����܂łɐ��������g�`�̃o�C�g��
-    int frame_render; // �P�t���[�����̃o�C�g��
-    int frame_in_ms;  // �P�t���[���̒���(ms)
+    int total_render;
+    int frame_render;
+    int frame_in_ms;
 
-    // �e�T�E���h�`�b�v�̃G�C���A�X�Q��
     xgm::NES_APU* apu;
     xgm::NES_DMC* dmc;
     xgm::NES_VRC6* vrc6;
