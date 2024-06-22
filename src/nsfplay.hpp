@@ -123,7 +123,7 @@ class NSFPlayer
     NSFPlayer()
     {
         nsf = NULL;
-        quality = 10;
+        quality = 10; // 変更する場合は rconv の hri を適切に設定する必要がある（10決め打ちの実装にすることで浮動小数点回避している）
         sc[APU] = (apu = new xgm::NES_APU());
         sc[DMC] = (dmc = new xgm::NES_DMC());
         sc[FDS] = (fds = new xgm::NES_FDS());
