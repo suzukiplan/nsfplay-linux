@@ -69,6 +69,3 @@ make
   - Copyright (c) Mamiya (mamiya@proc.org.tohoku.ac.jp)
 - KM6502: [LICENSE-km6502.txt](./LICENSE-km6502.txt) (PDS)
   - Copyright (c) Mamiya (mamiya@proc.org.tohoku.ac.jp)
-- emu2212: [LICENSE-emu2212](./LICENSE-emu2212.txt) (MIT)
-  - Copyright (c) 2014 Mitsutaka Okazaki
-  - https://github.com/digital-sound-antiques/emu2212

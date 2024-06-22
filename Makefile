@@ -19,7 +19,6 @@ OBJECTS += nes_fds.o
 OBJECTS += nes_mmc5.o
 OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
-OBJECTS += emu2212.o
 
 all: nsfplay
 	./nsfplay test.nsf
@@ -95,6 +94,3 @@ nes_vrc6.o: ./src/xgm/devices/Sound/nes_vrc6.cpp
 
 nes_vrc7.o: ./src/xgm/devices/Sound/nes_vrc7.cpp
 	${CPP} -c $<
-
-emu2212.o: ./src/xgm/devices/Sound/legacy/emu2212.c
-	${CC} -c $<
