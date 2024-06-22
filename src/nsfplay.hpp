@@ -17,7 +17,6 @@
 #include "xgm/devices/Sound/nes_n106.h"
 #include "xgm/devices/Sound/nes_fds.h"
 #include "xgm/devices/Audio/mixer.h"
-#include "xgm/devices/Audio/fader.h"
 #include "xgm/devices/Audio/amplifier.h"
 #include "xgm/devices/Audio/rconv.h"
 #include "xgm/devices/Misc/nsf2_irq.h"
@@ -52,7 +51,6 @@ class NSFPlayer
     xgm::Layer stack;
     xgm::Layer layer;
     xgm::Mixer mixer;
-    xgm::Fader fader;
 
     xgm::NES_CPU cpu;
     xgm::NES_MEM mem;
@@ -142,7 +140,6 @@ class NSFPlayer
             }
         }
         rconv.Attach(&mixer);
-        fader.Attach(&rconv);
         nch = 1;
         infinite = false;
         last_out = 0;
@@ -183,7 +180,6 @@ class NSFPlayer
         rconv.SetFastSkip(true);
         mixer.Reset();
         rconv.Reset();
-        fader.Reset();
     }
 
     void SetChannels(int channels)
@@ -251,10 +247,10 @@ class NSFPlayer
                 sc[i]->Tick(0); // determine starting state for all sound units
             }
         }
-        fader.Tick(0);
+        rconv.Tick(0);
         for (int i = 0; i < (quality + 1); ++i) {
             // warm up rconv/render with enough sample to reach a steady state
-            fader.Render(b);
+            rconv.Render(b);
         }
     }
 
@@ -273,11 +269,11 @@ class NSFPlayer
             cpu_clock_rest += apu_clock_per_sample;
             int cpu_clocks = (int)(cpu_clock_rest / 256);
             rconv.TickCPU(cpu_clocks);
-            fader.Tick(cpu_clocks);
+            rconv.Tick(cpu_clocks);
             cpu_clock_rest -= cpu_clocks * 256;
 
             // render output
-            fader.Render(buf);             // ticks APU/CPU and renders with subdivision and resampling (also does UpdateInfo)
+            rconv.Render(buf);             // ticks APU/CPU and renders with subdivision and resampling (also does UpdateInfo)
             outm = (buf[0] + buf[1]) >> 1; // mono mix
             if (outm == last_out) {
                 silent_length++;
