@@ -1,6 +1,7 @@
 #include "nes_dmc.h"
 #include "nes_apu.h"
 #include <stdlib.h>
+#include <string.h>
 
 namespace xgm
 {
@@ -557,11 +558,13 @@ UINT32 NES_DMC::Render(INT32 b[2])
         INT32 ref = m[0] + m[1] + m[2];
         INT32 voltage = tnd_table[1][out[0]][out[1]][out[2]];
         if (ref) {
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 3; ++i) {
                 m[i] = (m[i] * voltage) / ref;
+            }
         } else {
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 3; ++i) {
                 m[i] = voltage;
+            }
         }
     }
 
@@ -626,37 +629,9 @@ void NES_DMC::SetAPU(NES_APU* apu_)
 }
 
 // Initializing TRI, NOISE, DPCM mixing table
-void NES_DMC::InitializeTNDTable(double wt, double wn, double wd)
+void NES_DMC::InitializeTNDTable(int wt, int wn, int wd)
 {
-
-    // volume adjusted by 0.95 based on empirical measurements
-    const double MASTER = 8192.0 * 0.95;
-    // truthfully, the nonlinear curve does not appear to match well
-    // with my tests. Do more testing of the APU/DMC DAC later.
-    // this value keeps the triangle consistent with measured levels,
-    // but not necessarily the rest of this APU channel,
-    // because of the lack of a good DAC model, currently.
-
-    { // Linear Mixer
-        for (int t = 0; t < 16; t++) {
-            for (int n = 0; n < 16; n++) {
-                for (int d = 0; d < 128; d++) {
-                    tnd_table[0][t][n][d] = (UINT32)(MASTER * (3.0 * t + 2.0 * n + d) / 208.0);
-                }
-            }
-        }
-    }
-    { // Non-Linear Mixer
-        tnd_table[1][0][0][0] = 0;
-        for (int t = 0; t < 16; t++) {
-            for (int n = 0; n < 16; n++) {
-                for (int d = 0; d < 128; d++) {
-                    if (t != 0 || n != 0 || d != 0)
-                        tnd_table[1][t][n][d] = (UINT32)((MASTER * 159.79) / (100.0 + 1.0 / ((double)t / wt + (double)n / wn + (double)d / wd)));
-                }
-            }
-        }
-    }
+    memcpy(tnd_table, rom_tndtable, sizeof(tnd_table));
 }
 
 void NES_DMC::Reset()
@@ -743,8 +718,9 @@ void NES_DMC::SetOption(int id, int val)
 {
     if (id < OPT_END) {
         option[id] = val;
-        if (id == OPT_NONLINEAR_MIXER)
+        if (id == OPT_NONLINEAR_MIXER) {
             InitializeTNDTable(8227, 12241, 22638);
+        }
     }
 }
 

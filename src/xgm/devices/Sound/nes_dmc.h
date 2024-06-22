@@ -4,6 +4,8 @@
 #include "../device.h"
 #include "../CPU/nes_cpu.h"
 
+extern const short rom_tndtable[65536];
+
 namespace xgm
 {
 class NES_APU; // forward declaration
@@ -29,7 +31,7 @@ class NES_DMC : public ISoundChip
     const int GETA_BITS;
     static const UINT32 freq_table[2][16];
     static const UINT32 wavlen_table[2][16];
-    UINT32 tnd_table[2][16][16][128];
+    UINT16 tnd_table[2][16][16][128];
 
     int option[OPT_END];
     int mask;
@@ -98,7 +100,7 @@ class NES_DMC : public ISoundChip
     NES_DMC();
     ~NES_DMC();
 
-    void InitializeTNDTable(double wt, double wn, double wd);
+    void InitializeTNDTable(int wt, int wn, int wd);
     void SetPal(bool is_pal);
     void SetAPU(NES_APU* apu_);
     void SetMemory(IDevice* r);

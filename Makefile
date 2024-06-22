@@ -19,6 +19,7 @@ OBJECTS += nes_fds.o
 OBJECTS += nes_mmc5.o
 OBJECTS += nes_n106.o
 OBJECTS += nes_vrc6.o
+OBJECTS += rom_tndtable.o
 
 all: nsfplay
 	./nsfplay test.nsf
@@ -94,3 +95,6 @@ nes_vrc6.o: ./src/xgm/devices/Sound/nes_vrc6.cpp
 
 nes_vrc7.o: ./src/xgm/devices/Sound/nes_vrc7.cpp
 	${CPP} -c $<
+
+rom_tndtable.o: ./src/xgm/devices/Sound/rom_tndtable.c
+	${CC} -c $<
