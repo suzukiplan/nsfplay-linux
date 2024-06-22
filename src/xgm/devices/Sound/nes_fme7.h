@@ -1,7 +1,7 @@
 #ifndef _NES_FME7_H_
 #define _NES_FME7_H_
 #include "../device.h"
-#include "legacy/emu2149.h"
+#include "../../../fcs80/ay8910.hpp"
 
 namespace xgm
 {
@@ -17,7 +17,7 @@ class NES_FME7 : public ISoundChip
     // int option[OPT_END];
     INT32 sm[2][3]; // stereo mix
     INT16 buf[2];
-    PSG* psg;
+    fcs80::AY8910 psg;
     int divider; // clock divider
     long clock, rate;
 
@@ -32,10 +32,7 @@ class NES_FME7 : public ISoundChip
     virtual void SetClock(long c);
     virtual void SetRate(long r);
     virtual void SetOption(int, int);
-    virtual void SetMask(int m)
-    {
-        if (psg) PSG_setMask(psg, m);
-    }
+    virtual void SetMask(int m) { /* ignore */ }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
 };
 
