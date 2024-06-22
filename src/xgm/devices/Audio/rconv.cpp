@@ -7,21 +7,7 @@
 namespace xgm
 {
 
-#define GETA 16
-#define PI (3.14159265358979)
 #define PRECISION 16
-
-static double window(int n, int M)
-{
-    // rectangular window
-    // return 1.0;
-
-    // hanning window
-    // return 0.5 + 0.5 * cos(PI*double(n)/double(M));
-
-    // hamming window
-    return 0.54 + 0.46 * cos(PI * double(n) / double(M));
-}
 
 RateConverter::RateConverter() : clock(0), rate(0), mult(0), clocks(0),
                                  cpu(NULL), dmc(NULL), mmc5(NULL), cpu_clocks(0), cpu_rest(0),
@@ -48,25 +34,20 @@ void RateConverter::Reset()
         mult = (int)(clock / rate);
         if (mult < 2) mult = 1;
         if (mult > 63) mult = 63;
-
-        int m = (mult * 2 + 1) / 2;
-
-        // generate resampling window
-        hr[0] = window(0, m);
-        double gain = hr[0];
-        for (int i = 1; i <= m; i++) {
-            hr[i] = window(i, m);
-            gain += hr[i] * 2;
-        }
-
-        // normalize window
-        for (int i = 0; i <= m; i++) {
-            hr[i] /= gain;
-            hri[i] = INT64(hr[i] * (1 << PRECISION));
-        }
-
-        for (int i = 0; i <= mult * 2; i++)
+        hri[0] = 6023;
+        hri[1] = 5887;
+        hri[2] = 5494;
+        hri[3] = 4881;
+        hri[4] = 4108;
+        hri[5] = 3252;
+        hri[6] = 2396;
+        hri[7] = 1624;
+        hri[8] = 1011;
+        hri[9] = 617;
+        hri[10] = 481;
+        for (int i = 0; i <= mult * 2; i++) {
             tap[0][i] = tap[1][i] = 0;
+        }
     }
 }
 
@@ -112,7 +93,6 @@ void RateConverter::Skip()
 // ���͂�-32768�`+32767�܂�
 inline UINT32 RateConverter::FastRender(INT32 b[2])
 {
-    // double out[2];
     INT64 out[2];
     static INT32 t[2];
 

@@ -22,8 +22,7 @@ class RateConverter : public IRenderable
     long clock, rate;
     int mult;
     INT32 tap[2][128];
-    double hr[128]; // H(z)
-    INT64 hri[128];
+    int hri[128];
     UINT32 clocks; // render clocks pending Tick
     NES_CPU* cpu;
     NES_DMC* dmc;
