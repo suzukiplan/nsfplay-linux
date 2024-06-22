@@ -1,7 +1,6 @@
 #include "rconv.h"
 #include "../CPU/nes_cpu.h"
 #include "../Sound/nes_dmc.h"
-#include "../Sound/nes_mmc5.h"
 #include <math.h>
 
 namespace xgm
@@ -10,7 +9,7 @@ namespace xgm
 #define PRECISION 16
 
 RateConverter::RateConverter() : clock(0), rate(0), mult(0), clocks(0),
-                                 cpu(NULL), dmc(NULL), mmc5(NULL), cpu_clocks(0), cpu_rest(0),
+                                 cpu(NULL), dmc(NULL), cpu_clocks(0), cpu_rest(0),
                                  fast_skip(true)
 {
 }
@@ -83,7 +82,6 @@ void RateConverter::ClockCPU(int c)
         }
     }
     if (dmc) dmc->TickFrameSequence(real_cpu_clocks);
-    if (mmc5) mmc5->TickFrameSequence(real_cpu_clocks);
 }
 
 void RateConverter::Skip()

@@ -13,9 +13,6 @@
 #include "xgm/devices/Sound/nes_apu.h"
 #include "xgm/devices/Sound/nes_vrc6.h"
 #include "xgm/devices/Sound/nes_dmc.h"
-#include "xgm/devices/Sound/nes_mmc5.h"
-#include "xgm/devices/Sound/nes_n106.h"
-#include "xgm/devices/Sound/nes_fds.h"
 #include "xgm/devices/Audio/mixer.h"
 #include "xgm/devices/Audio/amplifier.h"
 #include "xgm/devices/Audio/rconv.h"
@@ -24,12 +21,7 @@
 
 enum DeviceCode { APU = 0,
                   DMC,
-                  FME7,
-                  MMC5,
-                  N106,
                   VRC6,
-                  VRC7,
-                  FDS,
                   NES_DEVICE_MAX };
 
 #define NES_CHANNEL_MAX 32
@@ -107,9 +99,6 @@ class NSFPlayer
     xgm::NES_APU* apu;
     xgm::NES_DMC* dmc;
     xgm::NES_VRC6* vrc6;
-    xgm::NES_MMC5* mmc5;
-    xgm::NES_N106* n106;
-    xgm::NES_FDS* fds;
     xgm::NSF* nsf;
 
     enum {
@@ -125,18 +114,12 @@ class NSFPlayer
         quality = 10; // 変更する場合は rconv の hri を適切に設定する必要がある（10決め打ちの実装にすることで浮動小数点回避している）
         sc[APU] = (apu = new xgm::NES_APU());
         sc[DMC] = (dmc = new xgm::NES_DMC());
-        sc[FDS] = (fds = new xgm::NES_FDS());
-        sc[MMC5] = (mmc5 = new xgm::NES_MMC5());
-        sc[N106] = (n106 = new xgm::NES_N106());
         sc[VRC6] = (vrc6 = new xgm::NES_VRC6());
         nsf2_irq.SetCPU(&cpu);
         dmc->SetAPU(apu);
         dmc->SetCPU(&cpu);
-        mmc5->SetCPU(&cpu);
         for (int i = 0; i < NES_DEVICE_MAX; i++) {
-            if (i != VRC7 && i != FME7) {
-                amp[i].Attach(sc[i]);
-            }
+            amp[i].Attach(sc[i]);
         }
         rconv.Attach(&mixer);
         nch = 1;
@@ -169,10 +152,8 @@ class NSFPlayer
         if (oversample > clock) oversample = clock;
         if (oversample < rate) oversample = rate;
         for (int i = 0; i < NES_DEVICE_MAX; i++) {
-            if (i != VRC7 && i != FME7) {
-                sc[i]->SetClock(clock);
-                sc[i]->SetRate(oversample);
-            }
+            sc[i]->SetClock(clock);
+            sc[i]->SetRate(oversample);
         }
         rconv.SetClock(oversample);
         rconv.SetRate(rate);
@@ -234,17 +215,12 @@ class NSFPlayer
 
         apu->SetMask(0);
         dmc->SetMask(0);
-        fds->SetMask(0);
-        mmc5->SetMask(0);
         vrc6->SetMask(0);
-        n106->SetMask(0);
 
         // suppress starting click by setting DC filter to balance the starting level at 0
         int32_t b[2];
         for (int i = 0; i < NES_DEVICE_MAX; ++i) {
-            if (i != VRC7 && i != FME7) {
-                sc[i]->Tick(0); // determine starting state for all sound units
-            }
+            sc[i]->Tick(0); // determine starting state for all sound units
         }
         rconv.Tick(0);
         for (int i = 0; i < (quality + 1); ++i) {
@@ -391,39 +367,13 @@ class NSFPlayer
 
         rconv.SetCPU(&cpu);
         rconv.SetDMC(dmc);
-        rconv.SetMMC5(NULL);
 
-        if (nsf->use_mmc5) {
-            stack.Attach(sc[MMC5]);
-            mixer.Attach(&amp[MMC5]);
-            rconv.SetMMC5(mmc5);
-        }
         if (nsf->use_vrc6) {
             stack.Attach(sc[VRC6]);
             mixer.Attach(&amp[VRC6]);
         }
-        if (nsf->use_n106) {
-            stack.Attach(sc[N106]);
-            mixer.Attach(&amp[N106]);
-        }
-        if (nsf->use_fds) {
-            bool multichip =
-                nsf->use_mmc5 ||
-                nsf->use_vrc6 ||
-                nsf->use_vrc7 ||
-                nsf->use_n106;
-            stack.Attach(sc[FDS]); // last before memory layer
-            mixer.Attach(&amp[FDS]);
-            mem.SetFDSMode(false);
-            bank.SetFDSMode(false);
-            if (!multichip) {
-                bank.SetBankDefault(6, nsf->bankswitch[6]);
-                bank.SetBankDefault(7, nsf->bankswitch[7]);
-            }
-        } else {
-            mem.SetFDSMode(false);
-            bank.SetFDSMode(false);
-        }
+        mem.SetFDSMode(false);
+        bank.SetFDSMode(false);
 
         // memory layer comes last
         stack.Attach(&layer);
