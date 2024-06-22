@@ -20,7 +20,7 @@ static void audioCallback(void* userdata, Uint8* stream, int len)
 int main(int argc, char* argv[])
 {
     const char* path = nullptr;
-    int trackNumber = 0;
+    int trackNumber = -1;
     bool error = false;
     for (int i = 1; !error && i < argc; i++) {
         if ('-' == argv[i][0]) {
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     player.Load(&nsf);
     player.SetPlayFreq(SAMPLING_RATE);
     player.SetChannels(SAMPLING_CH);
-    player.SetSong(trackNumber);
+    if (0 <= trackNumber) player.SetSong(trackNumber);
     player.Reset();
 
     // initialize SDL sound system
