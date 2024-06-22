@@ -102,7 +102,6 @@ class NSFPlayer
         VRC7_TRK8,
         NES_TRACK_MAX
     };
-    xgm::InfoBuffer infobuf[NES_TRACK_MAX]; // �e�g���b�N�̏���ۑ�
 
     int total_render; // ����܂łɐ��������g�`�̃o�C�g��
     int frame_render; // �P�t���[�����̃o�C�g��
@@ -249,10 +248,6 @@ class NSFPlayer
         vrc6->SetMask(0);
         n106->SetMask(0);
 
-        for (int i = 0; i < NES_TRACK_MAX; i++) {
-            infobuf[i].Clear();
-        }
-
         // suppress starting click by setting DC filter to balance the starting level at 0
         int32_t b[2];
         for (int i = 0; i < NES_DEVICE_MAX; ++i) {
@@ -322,7 +317,6 @@ class NSFPlayer
                     stream[0] = outm;
             }
             stream += nch;
-            UpdateInfo();
         }
         time_in_ms += (int)(1000 * length / rate);
         return length;
@@ -468,46 +462,6 @@ class NSFPlayer
     void UpdateInfinite()
     {
         infinite = false;
-    }
-
-    void UpdateInfo()
-    {
-        if (total_render % frame_render == 0) {
-            int i;
-
-            for (i = 0; i < 2; i++)
-                infobuf[APU1_TRK0 + i].AddInfo(total_render, apu->GetTrackInfo(i));
-
-            for (i = 0; i < 3; i++)
-                infobuf[APU2_TRK0 + i].AddInfo(total_render, dmc->GetTrackInfo(i));
-
-            if (nsf->use_fds)
-                infobuf[FDS_TRK0].AddInfo(total_render, fds->GetTrackInfo(0));
-
-            if (nsf->use_vrc6) {
-                for (i = 0; i < 3; i++)
-                    infobuf[VRC6_TRK0 + i].AddInfo(total_render, vrc6->GetTrackInfo(i));
-            }
-
-            if (nsf->use_n106) {
-                for (i = 0; i < 8; i++)
-                    infobuf[N106_TRK0 + i].AddInfo(total_render, n106->GetTrackInfo(i));
-            }
-
-            if (nsf->use_vrc7) {
-                // remove vrc7 support
-            }
-
-            if (nsf->use_mmc5) {
-                for (i = 0; i < 3; i++)
-                    infobuf[MMC5_TRK0 + i].AddInfo(total_render, mmc5->GetTrackInfo(i));
-            }
-
-            if (nsf->use_fme7) {
-                for (i = 0; i < 5; i++)
-                    infobuf[FME7_TRK0 + i].AddInfo(total_render, fme7->GetTrackInfo(i));
-            }
-        }
     }
 
     int GetRegion(uint8_t flags, int pref)

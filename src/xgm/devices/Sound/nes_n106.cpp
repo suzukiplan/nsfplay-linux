@@ -30,40 +30,6 @@ void NES_N106::SetStereoMix(int trk, INT16 mixl, INT16 mixr)
     sm[1][trk] = mixr;
 }
 
-ITrackInfo* NES_N106::GetTrackInfo(int trk)
-{
-    int channels = get_channels();
-    int channel = 7 - trk; // invert the track display
-
-    TrackInfoN106* t = &trkinfo[channel];
-
-    if (trk >= channels) {
-        t->max_volume = 15;
-        t->volume = 0;
-        t->_freq = 0;
-        t->wavelen = 0;
-        t->tone = -1;
-        t->output = 0;
-        t->key = false;
-        t->freq = 0;
-    } else {
-        t->max_volume = 15;
-        t->volume = get_vol(channel);
-        t->_freq = get_freq(channel);
-        t->wavelen = get_len(channel);
-        t->tone = get_off(channel);
-        t->output = fout[channel];
-
-        t->key = (t->volume > 0) && (t->_freq > 0);
-        t->freq = (double(t->_freq) * clock) / double(15 * 65536 * channels * t->wavelen);
-
-        for (int i = 0; i < t->wavelen; ++i)
-            t->wave[i] = get_sample((i + t->tone) & 0xFF);
-    }
-
-    return t;
-}
-
 void NES_N106::SetClock(long c)
 {
     clock = c;

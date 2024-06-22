@@ -5,13 +5,6 @@
 namespace xgm
 {
 
-class TrackInfoFDS : public TrackInfoBasic
-{
-  public:
-    INT16 wave[64];
-    virtual IDeviceInfo* Clone() { return new TrackInfoFDS(*this); }
-};
-
 class NES_FDS : public ISoundChip
 {
   public:
@@ -27,13 +20,10 @@ class NES_FDS : public ISoundChip
     int mask;
     INT32 sm[2]; // stereo mix
     INT32 fout;  // current output
-    TrackInfoFDS trkinfo;
     int option[OPT_END];
 
     bool master_io;
     UINT32 master_vol;
-    UINT32 last_freq; // for trackinfo
-    UINT32 last_vol;  // for trackinfo
 
     // two wavetables
     enum { TMOD = 0,
@@ -77,7 +67,6 @@ class NES_FDS : public ISoundChip
     virtual void SetOption(int, int);
     virtual void SetMask(int m) { mask = m & 1; }
     virtual void SetStereoMix(int trk, INT16 mixl, INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
 };
 
 } // namespace xgm

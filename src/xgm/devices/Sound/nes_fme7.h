@@ -20,7 +20,6 @@ class NES_FME7 : public ISoundChip
     PSG* psg;
     int divider; // clock divider
     long clock, rate;
-    TrackInfoBasic trkinfo[5];
 
   public:
     NES_FME7();
@@ -38,7 +37,6 @@ class NES_FME7 : public ISoundChip
         if (psg) PSG_setMask(psg, m);
     }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
 };
 
 } // namespace xgm

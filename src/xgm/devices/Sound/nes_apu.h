@@ -63,7 +63,6 @@ class NES_APU : public ISoundChip
 
     void sweep_sqr(int ch); // calculates target sweep frequency
     INT32 calc_sqr(int ch, UINT32 clocks);
-    TrackInfoBasic trkinfo[2];
 
   public:
     NES_APU();
@@ -81,7 +80,6 @@ class NES_APU : public ISoundChip
     virtual void SetOption(int id, int b);
     virtual void SetMask(int m) { mask = m; }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
 };
 
 } // namespace xgm

@@ -32,7 +32,6 @@ class NES_VRC6 : public ISoundChip
     int freq_shift;
     long clock, rate;
     INT32 out[3];
-    TrackInfoBasic trkinfo[3];
 
   public:
     NES_VRC6();
@@ -48,7 +47,6 @@ class NES_VRC6 : public ISoundChip
     virtual void SetOption(int, int);
     virtual void SetMask(int m) { mask = m; }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
 };
 
 } // namespace xgm

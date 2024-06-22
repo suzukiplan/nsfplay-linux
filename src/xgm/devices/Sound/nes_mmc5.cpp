@@ -353,37 +353,6 @@ void NES_MMC5::SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr)
     sm[1][trk] = mixr;
 }
 
-ITrackInfo* NES_MMC5::GetTrackInfo(int trk)
-{
-    assert(trk < 3);
-
-    if (trk < 2) // square
-    {
-        trkinfo[trk]._freq = freq[trk];
-        if (freq[trk])
-            trkinfo[trk].freq = clock / 16 / (freq[trk] + 1);
-        else
-            trkinfo[trk].freq = 0;
-
-        trkinfo[trk].output = out[trk];
-        trkinfo[trk].max_volume = 15;
-        trkinfo[trk].volume = volume[trk] + (envelope_disable[trk] ? 0 : 0x10);
-        trkinfo[trk].key = (envelope_disable[trk] ? (volume[trk] > 0) : (envelope_counter[trk] > 0));
-        trkinfo[trk].tone = duty[trk];
-    } else // pcm
-    {
-        trkinfo[trk]._freq = 0;
-        trkinfo[trk].freq = 0;
-        trkinfo[trk].output = out[2];
-        trkinfo[trk].max_volume = 255;
-        trkinfo[trk].volume = pcm;
-        trkinfo[trk].key = 0;
-        trkinfo[trk].tone = pcm_mode ? 1 : 0;
-    }
-
-    return &trkinfo[trk];
-}
-
 // pcm read mode requires CPU read access
 void NES_MMC5::SetCPU(NES_CPU* cpu_)
 {

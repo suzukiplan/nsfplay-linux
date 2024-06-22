@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include "../xtypes.h"
-#include "devinfo.h"
 
 namespace xgm
 {
@@ -123,7 +122,6 @@ class ISoundChip : public IDevice, virtual public IRenderable
     /**
      * Track info for keyboard view.
      */
-    virtual ITrackInfo* GetTrackInfo(int trk) { return NULL; }
     virtual ~ISoundChip(){};
 };
 

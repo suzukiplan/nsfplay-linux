@@ -2,6 +2,7 @@
 #include "../CPU/nes_cpu.h"
 #include "../Sound/nes_dmc.h"
 #include "../Sound/nes_mmc5.h"
+#include <math.h>
 
 namespace xgm
 {

@@ -314,46 +314,6 @@ void NES_DMC::SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr)
     sm[1][trk] = mixr;
 }
 
-ITrackInfo* NES_DMC::GetTrackInfo(int trk)
-{
-    switch (trk) {
-        case 0:
-            trkinfo[trk].max_volume = 255;
-            trkinfo[0].key = (linear_counter > 0 && length_counter[0] > 0 && enable[0]);
-            trkinfo[0].volume = 0;
-            trkinfo[0]._freq = tri_freq;
-            if (trkinfo[0]._freq)
-                trkinfo[0].freq = clock / 32 / (trkinfo[0]._freq + 1);
-            else
-                trkinfo[0].freq = 0;
-            trkinfo[0].tone = -1;
-            trkinfo[0].output = out[0];
-            break;
-        case 1:
-            trkinfo[1].max_volume = 15;
-            trkinfo[1].volume = noise_volume + (envelope_disable ? 0 : 0x10) + (envelope_loop ? 0x20 : 0);
-            trkinfo[1].key = length_counter[1] > 0 && enable[1] &&
-                             (envelope_disable ? (noise_volume > 0) : (envelope_counter > 0));
-            trkinfo[1]._freq = reg[0x400e - 0x4008] & 0xF;
-            trkinfo[1].freq = clock / double(wavlen_table[pal][trkinfo[1]._freq] * ((noise_tap & (1 << 6)) ? 93 : 1));
-            trkinfo[1].tone = noise_tap & (1 << 6);
-            trkinfo[1].output = out[1];
-            break;
-        case 2:
-            trkinfo[2].max_volume = 127;
-            trkinfo[2].volume = reg[0x4011 - 0x4008] & 0x7F;
-            trkinfo[2].key = dlength > 0;
-            trkinfo[2]._freq = reg[0x4010 - 0x4008] & 0xF;
-            trkinfo[2].freq = clock / double(freq_table[pal][trkinfo[2]._freq]);
-            trkinfo[2].tone = (0xc000 | (adr_reg << 6));
-            trkinfo[2].output = (damp << 1) | dac_lsb;
-            break;
-        default:
-            return NULL;
-    }
-    return &trkinfo[trk];
-}
-
 void NES_DMC::FrameSequence(int s)
 {
     if (s > 3) return; // no operation in step 4

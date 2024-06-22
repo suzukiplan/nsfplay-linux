@@ -47,7 +47,6 @@ class NES_MMC5 : public ISoundChip
     INT32 calc_sqr(int i, UINT32 clocks);
     INT32 square_table[32];
     INT32 pcm_table[256];
-    TrackInfoBasic trkinfo[3];
 
   public:
     NES_MMC5();
@@ -66,8 +65,6 @@ class NES_MMC5 : public ISoundChip
     virtual void SetRate(long);
     virtual void SetMask(int m) { mask = m; }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
-
     void SetCPU(NES_CPU* cpu_);
 };
 

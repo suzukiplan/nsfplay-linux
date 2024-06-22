@@ -79,8 +79,6 @@ class NES_DMC : public ISoundChip
     bool enable[2];        // tri/noise enable
     int length_counter[2]; // 0=tri, 1=noise
 
-    TrackInfoBasic trkinfo[3];
-
     // frame sequencer
     NES_APU* apu;              // apu is clocked by DMC's frame sequencer
     int frame_sequence_count;  // current cycle count
@@ -118,8 +116,6 @@ class NES_DMC : public ISoundChip
     virtual void SetOption(int, int);
     virtual void SetMask(int m) { mask = m; }
     virtual void SetStereoMix(int trk, xgm::INT16 mixl, xgm::INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
-
     void SetCPU(NES_CPU* cpu_);
 };
 

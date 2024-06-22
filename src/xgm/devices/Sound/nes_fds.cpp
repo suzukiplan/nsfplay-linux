@@ -1,4 +1,5 @@
 #include <string.h>
+#include <math.h>
 #include "nes_fds.h"
 
 namespace xgm
@@ -35,20 +36,6 @@ void NES_FDS::SetStereoMix(int trk, INT16 mixl, INT16 mixr)
     sm[1] = mixr;
 }
 
-ITrackInfo* NES_FDS::GetTrackInfo(int trk)
-{
-    trkinfo.max_volume = 32;
-    trkinfo.volume = last_vol;
-    trkinfo.key = last_vol > 0;
-    trkinfo._freq = last_freq;
-    trkinfo.freq = (double(last_freq) * clock) / (65536.0 * 64.0);
-    trkinfo.tone = env_out[EMOD];
-    for (int i = 0; i < 64; i++)
-        trkinfo.wave[i] = wave[TWAV][i];
-
-    return &trkinfo;
-}
-
 void NES_FDS::SetClock(long c)
 {
     clock = c;
@@ -79,9 +66,6 @@ void NES_FDS::Reset()
 {
     master_io = true;
     master_vol = 0;
-    last_freq = 0;
-    last_vol = 0;
-
     rc_accum = 0;
 
     for (int i = 0; i < 2; ++i) {
@@ -208,9 +192,6 @@ void NES_FDS::Tick(UINT32 clocks)
         INT32 f = freq[TWAV] + mod;
         phase[TWAV] = phase[TWAV] + (clocks * f);
         phase[TWAV] = phase[TWAV] & 0x3FFFFF; // wrap
-
-        // store for trackinfo
-        last_freq = f;
     }
 
     // output volume caps at 32
@@ -226,9 +207,6 @@ void NES_FDS::Tick(UINT32 clocks)
     // haven't worked out 100% of the conditions for volume to
     // effect (vol envelope does not seem to run, but am unsure)
     // but this implementation is very close to correct
-
-    // store for trackinfo
-    last_vol = vol_out;
 }
 
 UINT32 NES_FDS::Render(INT32 b[2])

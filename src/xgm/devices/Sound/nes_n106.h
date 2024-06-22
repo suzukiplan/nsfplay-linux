@@ -5,14 +5,6 @@
 namespace xgm
 {
 
-class TrackInfoN106 : public TrackInfoBasic
-{
-  public:
-    int wavelen;
-    INT16 wave[256];
-    virtual IDeviceInfo* Clone() { return new TrackInfoN106(*this); }
-};
-
 class NES_N106 : public ISoundChip
 {
   public:
@@ -28,7 +20,6 @@ class NES_N106 : public ISoundChip
     int mask;
     INT32 sm[2][8]; // stereo mix
     INT32 fout[8];  // current output
-    TrackInfoN106 trkinfo[8];
     int option[OPT_END];
 
     bool master_disable;
@@ -66,7 +57,6 @@ class NES_N106 : public ISoundChip
     virtual void SetOption(int, int);
     virtual void SetMask(int m);
     virtual void SetStereoMix(int trk, INT16 mixl, INT16 mixr);
-    virtual ITrackInfo* GetTrackInfo(int trk);
 };
 
 } // namespace xgm
